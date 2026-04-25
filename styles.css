@@ -205,19 +205,36 @@ h1, h2, h3, h4, h5 {
 .hero-mesh {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 5; /* Higher than content background but lower than content text */
+    z-index: 0;
     pointer-events: none;
     overflow: hidden;
-    border: 5px solid blue; /* TEST BORDER */
 }
 
 .grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 80px);
-    grid-template-rows: repeat(auto-fill, 80px);
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
     width: 100%;
     height: 100%;
-    background: rgba(0, 255, 0, 0.1); /* TEST BACKGROUND */
+    animation: breatheMesh 10s infinite alternate ease-in-out;
+}
+
+@keyframes breatheMesh {
+    0% { opacity: 0.4; transform: scale(1); }
+    100% { opacity: 0.7; transform: scale(1.02); }
+}
+
+.hero-spotlight {
+    position: absolute;
+    top: 0; left: 0;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(247, 106, 12, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 5;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    mix-blend-mode: screen;
 }
 
 @keyframes breatheMesh {
@@ -247,9 +264,9 @@ h1, h2, h3, h4, h5 {
     height: 80px;
     perspective: 1000px;
     cursor: default;
-    border: 1px solid rgba(215, 209, 251, 0.6); /* Strengthened border */
+    border: 0.5px solid rgba(15, 23, 42, 0.08); /* Minimal subtle border */
     box-sizing: border-box;
-    transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1), background-color 0.4s ease;
+    transition: transform 0.4s ease, background-color 0.4s ease;
 }
 
 .cell-inner {
@@ -278,8 +295,7 @@ h1, h2, h3, h4, h5 {
 }
 
 .cell-front {
-    background: rgba(215, 209, 251, 0.05); /* Subtle background to make it visible */
-    border-radius: 2px;
+    background: rgba(247, 106, 12, 0.02);
 }
 
 .cell-back {
