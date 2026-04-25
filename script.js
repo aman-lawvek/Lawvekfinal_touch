@@ -114,62 +114,59 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 6. Interactive Hero Grid Overhaul
+    // 6. Interactive 3D Flip Grid & Spotlight
     const heroMeshGrid = document.querySelector('.hero-mesh');
-    const heroSection = document.querySelector('.hero');
-    
-    if (heroMeshGrid && heroSection) {
+    if (heroMeshGrid) {
         const terms = [
-            'Audit-Ready', 'IP Rights', 'Compliance', 'Obligation', 'SLA Breach', 
-            'Renewal', 'Liability', 'Penalty', 'Risk Score', 'Governance',
-            'Data Privacy', 'GDPR', 'SOC 2', 'ISO 27001', 'Automation'
+            'Audits', 'IP Rights', 'Compliance', 'Obligation Management', 
+            'Security', 'Risk', 'SLA', 'Contracts', 'Policies', 'Privacy', 
+            'GDPR', 'SOC2', 'ISO 27001', 'Governance', 'Liability', 'Renewal',
+            'Penalty', 'Control', 'Accountability', 'Verification'
         ];
 
-        // Create Spotlight element
+        // Create spotlight element
         const spotlight = document.createElement('div');
-        spotlight.className = 'mesh-spotlight';
-        heroSection.appendChild(spotlight);
+        spotlight.className = 'hero-spotlight';
+        heroMeshGrid.appendChild(spotlight);
 
-        const generateGrid = () => {
-            heroMeshGrid.innerHTML = '';
-            // Ensure we have a height, fallback to window height if hero is collapsed initially
-            const heroHeight = heroSection.offsetHeight || window.innerHeight;
-            const columns = Math.ceil(window.innerWidth / 80) + 1;
-            const rows = Math.ceil(heroHeight / 80) + 1;
-            const totalCells = columns * rows;
+        // Fill grid with cells
+        const updateGrid = () => {
+            heroMeshGrid.querySelectorAll('.mesh-cell').forEach(c => c.remove());
+            
+            const cellSize = 80;
+            const cols = Math.ceil(window.innerWidth / cellSize) + 2;
+            const rows = Math.ceil(window.innerHeight / cellSize) + 2;
+            const totalCells = cols * rows;
 
-            const fragment = document.createDocumentFragment();
             for (let i = 0; i < totalCells; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'mesh-cell';
                 
                 const inner = document.createElement('div');
-                inner.className = 'mesh-cell-inner';
+                inner.className = 'cell-inner';
                 
                 const front = document.createElement('div');
-                front.className = 'mesh-cell-front';
+                front.className = 'cell-front';
                 
                 const back = document.createElement('div');
-                back.className = 'mesh-cell-back';
+                back.className = 'cell-back';
                 back.innerText = terms[Math.floor(Math.random() * terms.length)];
                 
                 inner.appendChild(front);
                 inner.appendChild(back);
                 cell.appendChild(inner);
-                fragment.appendChild(cell);
+                heroMeshGrid.appendChild(cell);
             }
-            heroMeshGrid.appendChild(fragment);
         };
 
-        // Immediate call + Delayed call to ensure layout is ready
-        generateGrid();
-        setTimeout(generateGrid, 250);
-        window.addEventListener('resize', generateGrid);
+        updateGrid();
+        window.addEventListener('resize', updateGrid);
 
-
-        // Interaction Logic
-        heroSection.addEventListener('mousemove', (e) => {
-            const rect = heroSection.getBoundingClientRect();
+        // Interaction logic
+        const cells = heroMeshGrid.getElementsByClassName('mesh-cell');
+        
+        window.addEventListener('mousemove', (e) => {
+            const rect = heroMeshGrid.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
 
@@ -177,40 +174,21 @@ document.addEventListener('DOMContentLoaded', () => {
             spotlight.style.left = `${x}px`;
             spotlight.style.top = `${y}px`;
 
-            // Optimized Proximity Effects - only check visible/near cells
-            const cells = document.querySelectorAll('.mesh-cell');
-            const spotlightRadius = 200;
-            
-            cells.forEach(cell => {
+            // Proximity effect
+            const range = 150;
+            Array.from(cells).forEach(cell => {
                 const cellRect = cell.getBoundingClientRect();
                 const cellX = cellRect.left + cellRect.width / 2;
                 const cellY = cellRect.top + cellRect.height / 2;
-
-                const dx = e.clientX - cellX;
-                const dy = e.clientY - cellY;
-                const distance = Math.sqrt(dx*dx + dy*dy);
-
-                if (distance < spotlightRadius) {
-                    const power = (spotlightRadius - distance) / spotlightRadius;
-                    const scale = 1 + (power * 0.05);
-                    const brightness = 1 + (power * 0.5);
-                    cell.style.transform = `scale(${scale})`;
-                    cell.style.filter = `brightness(${brightness})`;
-                    
-                    // Manually trigger flip if very close (alternative to :hover if blocked)
-                    if (distance < 40) {
-                        cell.querySelector('.mesh-cell-inner').style.transform = 'rotateY(180deg)';
-                    } else {
-                        cell.querySelector('.mesh-cell-inner').style.transform = '';
-                    }
+                
+                const dist = Math.hypot(e.clientX - cellX, e.clientY - cellY);
+                
+                if (dist < range) {
+                    cell.classList.add('nearby');
                 } else {
-                    cell.style.transform = 'scale(1)';
-                    cell.style.filter = 'brightness(1)';
-                    cell.querySelector('.mesh-cell-inner').style.transform = '';
+                    cell.classList.remove('nearby');
                 }
             });
         });
-
     }
-
 });
