@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     inner.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${baseRotY + rotY}deg) translateZ(${z}px)`;
                     
                     // Subtle opacity shift for "lively" effect
-                    cell.style.opacity = 0.5 + Math.sin(phase) * 0.2;
+                    cell.style.opacity = 0.7 + Math.sin(phase) * 0.2;
                 }
             }
             requestAnimationFrame(animate);
@@ -251,6 +251,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
-    }
     }
 });
