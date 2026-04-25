@@ -260,7 +260,7 @@ h1, h2, h3, h4, h5 {
     height: 80px;
     perspective: 1500px;
     cursor: default;
-    border: 1px solid rgba(247, 106, 12, 0.1);
+    border: 1px solid rgba(247, 106, 12, 0.2); /* Stronger orange border */
     box-sizing: border-box;
     transition: opacity 0.8s ease;
     transform-style: preserve-3d;
@@ -301,10 +301,10 @@ h1, h2, h3, h4, h5 {
 }
 
 .cell-front {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
-    color: #fca5a5; /* Soft light orange/red for text */
+    background: linear-gradient(135deg, rgba(51, 65, 85, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%); /* Lighter lifted block */
+    color: #ffedd5; /* Very light orange for text */
     font-family: 'Instrument Sans', sans-serif;
-    font-size: 0.55rem;
+    font-size: 0.6rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -313,8 +313,9 @@ h1, h2, h3, h4, h5 {
     align-items: center;
     justify-content: center;
     padding: 8px;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5), inset 0 0 10px rgba(247, 106, 12, 0.1);
+    border-radius: 6px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(247, 106, 12, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .hero-content h1 {

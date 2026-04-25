@@ -191,14 +191,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     const phase = dist * 0.25 - time + angle * 0.5;
                     
                     // Deeper Z-motion
-                    const z = Math.sin(phase) * 60 - 80; // Moves deeper into screen
+                    const z = Math.sin(phase) * 40 - 20; 
                     const rotX = Math.cos(phase * 0.8) * 20;
                     const rotY = Math.sin(phase * 0.8) * 20;
                     
                     inner.style.transform = `perspective(1500px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${z}px)`;
                     
                     // Galaxy-like fading (natural and lively)
-                    const op = 0.5 + Math.sin(phase) * 0.35;
+                    const op = 0.6 + Math.sin(phase) * 0.3;
                     cellObj.element.style.opacity = Math.max(0, op);
                 }
             }
