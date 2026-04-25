@@ -206,23 +206,21 @@ h1, h2, h3, h4, h5 {
     pointer-events: auto; /* Re-enable for buttons and text */
 }
 
-/* Premium Mesh & Floating Elements */
 .hero-mesh {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 0;
+    z-index: 1; /* Above background, below content */
     pointer-events: none;
     overflow: hidden;
-    background: radial-gradient(circle at center, rgba(15, 23, 42, 0.05) 0%, transparent 80%);
 }
 
 .grid-container {
     display: flex;
     flex-wrap: wrap;
-    align-content: flex-start;
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
+    perspective: 1500px;
 }
 
 @keyframes breatheMesh {
@@ -258,10 +256,8 @@ h1, h2, h3, h4, h5 {
     width: 80px;
     height: 80px;
     perspective: 1500px;
-    cursor: default;
-    border: 1px solid rgba(247, 106, 12, 0.2); /* Stronger orange border */
     box-sizing: border-box;
-    transition: opacity 0.8s ease;
+    border: 0.5px solid rgba(15, 23, 42, 0.05);
     transform-style: preserve-3d;
 }
 
@@ -300,21 +296,20 @@ h1, h2, h3, h4, h5 {
 }
 
 .cell-front {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); /* Sharp dark lifted block */
-    color: #f8fafc; /* Crisp white text */
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(4px);
+    color: var(--primary-color);
     font-family: 'Instrument Sans', sans-serif;
-    font-size: 0.6rem;
-    font-weight: 800;
+    font-size: 0.5rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    text-align: center;
+    letter-spacing: 0.05em;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8px;
-    border-radius: 6px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    border-bottom: 3px solid rgba(0,0,0,0.3); /* Lifted bottom edge */
+    padding: 5px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    border: 1px solid rgba(247, 106, 12, 0.1);
 }
 
 .hero-content h1 {

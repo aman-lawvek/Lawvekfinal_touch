@@ -154,10 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     const front = document.createElement('div');
                     front.className = 'cell-front';
-                    // Show keyword on front, with higher density (80%)
-                    if (Math.random() > 0.2) {
-                        front.innerText = terms[Math.floor(Math.random() * terms.length)];
-                    }
+                    // Show keyword on all cells for a rich galaxy of data
+                    front.innerText = terms[Math.floor(Math.random() * terms.length)];
                     
                     inner.appendChild(front);
                     cell.appendChild(inner);
@@ -175,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let time = 0;
         const animate = () => {
-            time += 0.003; // Even slower for "natural" galaxy feel
+            time += 0.002; // Ultra slo-mo for premium feel
             
             for (let r = 0; r < cells.length; r++) {
                 for (let c = 0; c < cells[r].length; c++) {
@@ -187,19 +185,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     const angle = Math.atan2(dy, dx);
                     
-                    // Complex helical/galaxy wave
-                    const phase = dist * 0.25 - time + angle * 0.5;
+                    // Smooth helical wave
+                    const phase = dist * 0.2 - time + angle * 0.4;
                     
-                    // Deeper Z-motion
-                    const z = Math.sin(phase) * 40 - 20; 
-                    const rotX = Math.cos(phase * 0.8) * 20;
-                    const rotY = Math.sin(phase * 0.8) * 20;
+                    // Very subtle depth shift to stay visible
+                    const z = Math.sin(phase) * 20 - 10; 
+                    const rotX = Math.cos(phase * 0.5) * 10;
+                    const rotY = Math.sin(phase * 0.5) * 10;
                     
-                    inner.style.transform = `perspective(1500px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${z}px)`;
+                    inner.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${z}px)`;
                     
-                    // Galaxy-like fading (natural and lively)
-                    const op = 0.6 + Math.sin(phase) * 0.3;
-                    cellObj.element.style.opacity = Math.max(0, op);
+                    // Strong visibility
+                    const op = 0.8 + Math.sin(phase) * 0.2;
+                    cellObj.element.style.opacity = op;
                 }
             }
             requestAnimationFrame(animate);
