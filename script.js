@@ -177,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             updateGrid();
+            window.addEventListener('load', updateGrid);
             window.addEventListener('resize', updateGrid);
 
             // Interaction logic
