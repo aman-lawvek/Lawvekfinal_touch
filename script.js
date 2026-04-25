@@ -115,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 6. Interactive 3D Flip Grid & Spotlight
-    const heroSection = document.querySelector('.hero');
     const heroMeshGrid = document.querySelector('.hero-mesh');
     
     if (heroMeshGrid && heroSection) {
