@@ -163,10 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (heroMeshGrid && heroSectionMesh) {
         const terms = [
-            'Audit', 'IP Rights', 'Compliance', 'Obligation Management', 
-            'Security', 'Risk', 'SLA', 'Contracts', 'Policies', 'Privacy', 
-            'GDPR', 'SOC2', 'ISO 27001', 'Governance', 'Liability', 'Renewal',
-            'Penalty', 'Control', 'Accountability', 'Verification'
+            'Audit', 'Compliance', 'Obligations', 'Contracts', 'Liability', 
+            'Indemnity', 'Confidentiality', 'Licensing', 'Governance', 'Filings', 
+            'Deadlines', 'Deliverables', 'Milestones', 'Renewals', 'Penalties', 
+            'Breach', 'Default', 'Termination', 'Disclosure', 'Regulation'
         ];
 
         heroMeshGrid.innerHTML = '';
@@ -201,12 +201,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const inner = document.createElement('div');
                     inner.className = 'cell-inner';
                     
+                    // Front face is EMPTY — clean grid
                     const front = document.createElement('div');
                     front.className = 'cell-front';
-                    if (Math.random() > 0.6) {
-                        front.innerText = terms[Math.floor(Math.random() * terms.length)];
-                    }
 
+                    // Back face shows a term on flip
                     const back = document.createElement('div');
                     back.className = 'cell-back';
                     back.innerText = terms[Math.floor(Math.random() * terms.length)];
@@ -215,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     inner.appendChild(back);
                     cell.appendChild(inner);
                     fragment.appendChild(cell);
-                    rowArray.push({ element: cell, inner: inner, col: c, row: r });
+                    rowArray.push({ element: cell, inner: inner });
                 }
                 cells.push(rowArray);
             }
@@ -229,76 +228,73 @@ document.addEventListener('DOMContentLoaded', () => {
             resizeTimeout = setTimeout(updateGrid, 200);
         });
 
-        // Mouse tracking for spotlight and cell flipping
+        // High-performance smooth tracking
+        const heroContent = document.querySelector('.hero-content');
+        let spotX = -1000, spotY = -1000, targetX = -1000, targetY = -1000;
+        let lastMouseX = 0, lastMouseY = 0;
+
         heroSectionMesh.addEventListener('mousemove', (e) => {
             const rect = heroSectionMesh.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            spotlight.style.left = x + 'px';
-            spotlight.style.top = y + 'px';
+            targetX = e.clientX - rect.left;
+            targetY = e.clientY - rect.top;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+
+        const updateVisuals = () => {
+            // Light lerp for fluid movement without lag
+            spotX += (targetX - spotX) * 0.25;
+            spotY += (targetY - spotY) * 0.25;
+
+            spotlight.style.left = spotX + 'px';
+            spotlight.style.top = spotY + 'px';
 
             const cellSize = 80;
-            const mouseCol = Math.floor(x / cellSize);
-            const mouseRow = Math.floor(y / cellSize);
-            const flipRadius = 2;
+            const mouseCol = Math.floor(spotX / cellSize);
+            const mouseRow = Math.floor(spotY / cellSize);
+
+            // Dead zone check using lerped coordinates for smoothness
+            let inDeadZone = false;
+            const heroContentElements = heroContent.querySelectorAll('h1, p, a, button, .badge, .hero-dashboard-preview, .btn');
+            const buffer = 10; // Reduced buffer for better feel
+
+            for (const el of heroContentElements) {
+                const rect = el.getBoundingClientRect();
+                // Use lastMouseX/Y for immediate deadzone response
+                if (lastMouseX >= (rect.left - buffer) && lastMouseX <= (rect.right + buffer) &&
+                    lastMouseY >= (rect.top - buffer) && lastMouseY <= (rect.bottom + buffer)) {
+                    inDeadZone = true;
+                    break;
+                }
+            }
 
             for (let r = 0; r < cells.length; r++) {
                 for (let c = 0; c < cells[r].length; c++) {
                     const cellObj = cells[r][c];
                     const dist = Math.sqrt(Math.pow(c - mouseCol, 2) + Math.pow(r - mouseRow, 2));
                     
-                    if (dist < flipRadius) {
-                        cellObj.element.classList.add('flipped');
-                        cellObj.element.classList.add('nearby');
+                    if (!inDeadZone && r === mouseRow && c === mouseCol) {
+                        if (!cellObj.element.classList.contains('flipped')) {
+                            cellObj.element.classList.add('flipped');
+                        }
+                        cellObj.element.classList.remove('nearby');
+                    } else if (dist < 3) {
+                        cellObj.element.classList.remove('flipped');
+                        if (!cellObj.element.classList.contains('nearby')) {
+                            cellObj.element.classList.add('nearby');
+                        }
                     } else {
                         cellObj.element.classList.remove('flipped');
                         cellObj.element.classList.remove('nearby');
                     }
                 }
             }
-        });
+            requestAnimationFrame(updateVisuals);
+        };
+        requestAnimationFrame(updateVisuals);
 
         heroSectionMesh.addEventListener('mouseleave', () => {
-            for (let r = 0; r < cells.length; r++) {
-                for (let c = 0; c < cells[r].length; c++) {
-                    cells[r][c].element.classList.remove('flipped');
-                    cells[r][c].element.classList.remove('nearby');
-                }
-            }
+            targetX = -1000; targetY = -1000; // Move spotlight away
         });
-
-        // Subtle ambient animation
-        let time = 0;
-        const animate = () => {
-            time += 0.003;
-            
-            for (let r = 0; r < cells.length; r++) {
-                for (let c = 0; c < cells[r].length; c++) {
-                    const cellObj = cells[r][c];
-                    if (cellObj.element.classList.contains('flipped')) continue;
-                    
-                    const inner = cellObj.inner;
-                    const dx = c - (cells[r].length / 2);
-                    const dy = r - (cells.length / 2);
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    const angle = Math.atan2(dy, dx);
-                    
-                    const phase = dist * 0.25 - time + angle * 0.5;
-                    const z = Math.sin(phase) * 30 - 40;
-                    const rotX = Math.cos(phase * 0.8) * 10;
-                    const rotY = Math.sin(phase * 0.8) * 10;
-                    
-                    inner.style.transform = `perspective(1500px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${z}px)`;
-                    
-                    const op = 0.5 + Math.sin(phase) * 0.35;
-                    cellObj.element.style.opacity = Math.max(0, op);
-                }
-            }
-            requestAnimationFrame(animate);
-        };
-
-        requestAnimationFrame(animate);
     }
 });
-
