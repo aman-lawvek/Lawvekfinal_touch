@@ -157,56 +157,82 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 6. Random Static Hero Grid Overlay
+    // 6. Interactive 3D Flip Grid & Spotlight
     const heroMeshGrid = document.querySelector('.hero-mesh');
-    if (heroMeshGrid) {
-        const terms = ['Audit', 'Liability', 'Termination', 'SLA Breach', 'Renewal', 'IP Rights', 'Penalty', 'Payment', 'Risk', 'Control'];
-        // Shuffle and pick 7
-        const shuffledTerms = terms.sort(() => 0.5 - Math.random()).slice(0, 7);
-        
-        // Define safe grid columns tightly constrained to remain on-screen 
-        // but fully clear the central text container block 
-        const safeCols = [-8, -7, -6, 6, 7, 8];
-        const chosenCoords = [];
-        
-        shuffledTerms.forEach(term => {
-            let col, row;
-            let attempts = 0;
-            let isValid = false;
+    const heroSection = document.querySelector('.hero');
+    
+    if (heroMeshGrid && heroSection) {
+        const terms = [
+            'Audits', 'IP Rights', 'Compliance', 'Obligation Management', 
+            'Security', 'Risk', 'SLA', 'Contracts', 'Policies', 'Privacy', 
+            'GDPR', 'SOC2', 'ISO 27001', 'Governance', 'Liability', 'Renewal',
+            'Penalty', 'Control', 'Accountability', 'Verification'
+        ];
+
+        heroMeshGrid.innerHTML = '';
+        const gridContainer = document.createElement('div');
+        gridContainer.className = 'grid-container';
+        heroMeshGrid.appendChild(gridContainer);
+
+        const spotlight = document.createElement('div');
+        spotlight.className = 'hero-spotlight';
+        heroMeshGrid.appendChild(spotlight);
+
+        let cells = [];
+
+        const updateGrid = () => {
+            gridContainer.innerHTML = '';
+            cells = [];
             
-            // Re-roll to ensure no two tiles sit in the exact same spot OR touch horizontally/vertically/diagonally
-            do {
-                col = safeCols[Math.floor(Math.random() * safeCols.length)];
-                row = Math.floor(Math.random() * 5) + 1; // 1 to 5 y-axis rows to avoid hiding near dashboard bottom
-                
-                isValid = true;
-                for (const existing of chosenCoords) {
-                    const colDiff = Math.abs(existing.col - col);
-                    const rowDiff = Math.abs(existing.row - row);
-                    
-                    if (colDiff <= 1 && rowDiff <= 1) {
-                        isValid = false; // Blocks immediate neighbors and diagonals completely
-                        break;
-                    }
-                }
-                attempts++;
-            } while (!isValid && attempts < 100);
-            
-            if (isValid) {
-                chosenCoords.push({ col, row });
-                
-                // Mathematically align them to the center-originating CSS grid
-                const leftPos = `calc(50% - 40px + ${col * 80}px)`;
-                const topPos = `${row * 80}px`;
-                
+            const cols = Math.ceil(window.innerWidth / 80);
+            const rows = Math.ceil(window.innerHeight / 80);
+            const totalCells = cols * rows;
+
+            for (let i = 0; i < totalCells; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'mesh-cell';
-                cell.style.left = leftPos;
-                cell.style.top = topPos;
-                cell.innerText = term;
                 
-                heroMeshGrid.appendChild(cell);
+                const inner = document.createElement('div');
+                inner.className = 'cell-inner';
+                
+                const front = document.createElement('div');
+                front.className = 'cell-front';
+                
+                const back = document.createElement('div');
+                back.className = 'cell-back';
+                back.innerText = terms[Math.floor(Math.random() * terms.length)];
+                
+                inner.appendChild(front);
+                inner.appendChild(back);
+                cell.appendChild(inner);
+                gridContainer.appendChild(cell);
+                cells.push(cell);
             }
+        };
+
+        updateGrid();
+        window.addEventListener('resize', updateGrid);
+
+        heroSection.addEventListener('mousemove', (e) => {
+            // Update Spotlight
+            const rect = heroSection.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            spotlight.style.left = `${x}px`;
+            spotlight.style.top = `${y}px`;
+
+            // Randomly flip nearby cells
+            cells.forEach(cell => {
+                const cellRect = cell.getBoundingClientRect();
+                const cellX = cellRect.left + cellRect.width / 2;
+                const cellY = cellRect.top + cellRect.height / 2;
+                
+                const dist = Math.hypot(x - cellX, y - cellY);
+                if (dist < 120 && Math.random() > 0.8) {
+                    cell.classList.add('flipped');
+                    setTimeout(() => cell.classList.remove('flipped'), 2000);
+                }
+            });
         });
     }
 });
