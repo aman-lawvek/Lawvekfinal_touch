@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.addEventListener('scroll', revealOnScroll);
-    revealOnScroll();
+    revealOnScroll(); // Trigger once on load
 
     // 2. Navbar glass effect on scroll
     const navbar = document.getElementById('navbar');
@@ -34,18 +34,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
+            // Remove active class from all
             tabBtns.forEach(b => b.classList.remove('active'));
             tabPanes.forEach(p => {
                 p.classList.remove('active');
+                // Brief timeout to re-trigger animations if needed
                 setTimeout(() => p.style.display = 'none', 300);
             });
 
+            // Add active class to clicked
             btn.classList.add('active');
             const targetId = btn.getAttribute('data-target');
             const targetPane = document.getElementById(targetId);
-
+            
             setTimeout(() => {
                 targetPane.style.display = 'block';
+                // Trigger reflow
                 void targetPane.offsetWidth;
                 targetPane.classList.add('active');
             }, 300);
@@ -53,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 4. Cursor parallax for hero dashboard
-    const heroDashboard = document.querySelector('.hero-dashboard-preview');
+    const heroDashboard = document.querySelector('.dashboard-mockup');
     const heroSection = document.querySelector('.hero');
 
     if(heroDashboard && heroSection) {
@@ -61,6 +65,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const xAxis = (window.innerWidth / 2 - e.pageX) / 50;
             const yAxis = (window.innerHeight / 2 - e.pageY) / 50;
             heroDashboard.style.transform = `perspective(1000px) rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        heroSection.addEventListener('mouseenter', () => {
+            heroDashboard.style.transition = 'none';
         });
 
         heroSection.addEventListener('mouseleave', () => {
@@ -104,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.innerText = 'Processing...';
 
                 const formData = new FormData(bookingForm);
+                
                 fetch(scriptURL, { method: 'POST', body: formData })
                     .then(response => {
                         alert('Success! Your demo is booked.');
@@ -122,41 +131,107 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 6. Random Static Hero Grid Overlay (Matches Vercel)
+    // 6. Interactive 3D Flip Grid & Spotlight
+    const heroSection = document.querySelector('.hero');
     const heroMeshGrid = document.querySelector('.hero-mesh');
-    if (heroMeshGrid) {
-        const terms = ['Audit', 'Liability', 'Termination', 'SLA Breach', 'Renewal', 'IP Rights', 'Penalty', 'Payment', 'Risk', 'Control'];
-        const shuffledTerms = terms.sort(() => 0.5 - Math.random()).slice(0, 7);
-        const safeCols = [-8, -7, -6, 6, 7, 8];
-        const chosenCoords = [];
+    
+    if (heroMeshGrid && heroSection) {
+        const terms = [
+            'Audits', 'IP Rights', 'Compliance', 'Obligation Management', 
+            'Security', 'Risk', 'SLA', 'Contracts', 'Policies', 'Privacy', 
+            'GDPR', 'SOC2', 'ISO 27001', 'Governance', 'Liability', 'Renewal',
+            'Penalty', 'Control', 'Accountability', 'Verification'
+        ];
 
-        shuffledTerms.forEach(term => {
-            let col, row;
-            let attempts = 0;
-            let isValid = false;
+        heroMeshGrid.innerHTML = '';
+        const gridContainer = document.createElement('div');
+        gridContainer.className = 'grid-container';
+        heroMeshGrid.appendChild(gridContainer);
 
-            do {
-                col = safeCols[Math.floor(Math.random() * safeCols.length)];
-                row = Math.floor(Math.random() * 5) + 1;
-                isValid = true;
-                for (const existing of chosenCoords) {
-                    if (Math.abs(existing.col - col) <= 1 && Math.abs(existing.row - row) <= 1) {
-                        isValid = false;
-                        break;
-                    }
-                }
-                attempts++;
-            } while (!isValid && attempts < 100);
+        const spotlight = document.createElement('div');
+        spotlight.className = 'hero-spotlight';
+        heroMeshGrid.appendChild(spotlight);
 
-            if (isValid) {
-                chosenCoords.push({ col, row });
+        let cells = [];
+
+        const updateGrid = () => {
+            gridContainer.innerHTML = '';
+            cells = [];
+            
+            const cellSize = 80;
+            const w = window.innerWidth;
+            const h = Math.max(heroSection.offsetHeight, 1000);
+            
+            const cols = Math.ceil(w / cellSize);
+            const rows = Math.ceil(h / cellSize);
+            const total = cols * rows;
+
+            const fragment = document.createDocumentFragment();
+            for (let i = 0; i < total; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'mesh-cell';
-                cell.style.left = `calc(50% - 40px + ${col * 80}px)`;
-                cell.style.top = `${row * 80}px`;
-                cell.innerText = term;
-                heroMeshGrid.appendChild(cell);
+                
+                const inner = document.createElement('div');
+                inner.className = 'cell-inner';
+                
+                const front = document.createElement('div');
+                front.className = 'cell-front';
+                
+                const back = document.createElement('div');
+                back.className = 'cell-back';
+                back.innerText = terms[Math.floor(Math.random() * terms.length)];
+                
+                inner.appendChild(front);
+                inner.appendChild(back);
+                cell.appendChild(inner);
+                fragment.appendChild(cell);
+                cells.push(cell);
             }
+            gridContainer.appendChild(fragment);
+        };
+
+        updateGrid();
+        window.addEventListener('resize', updateGrid);
+        window.addEventListener('load', updateGrid);
+
+        heroSection.addEventListener('mousemove', (e) => {
+            const rect = heroMeshGrid.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            spotlight.style.left = `${x}px`;
+            spotlight.style.top = `${y}px`;
+
+            const range = 220;
+            const flipRange = 65;
+
+            for (let i = 0; i < cells.length; i++) {
+                const cell = cells[i];
+                const cRect = cell.getBoundingClientRect();
+                const cX = cRect.left + cRect.width / 2;
+                const cY = cRect.top + cRect.height / 2;
+                
+                const dist = Math.hypot(e.clientX - cX, e.clientY - cY);
+                
+                if (dist < range) {
+                    cell.classList.add('nearby');
+                } else {
+                    cell.classList.remove('nearby');
+                }
+
+                if (dist < flipRange) {
+                    cell.classList.add('flipped');
+                } else {
+                    cell.classList.remove('flipped');
+                }
+            }
+        });
+
+        heroSection.addEventListener('mouseleave', () => {
+            cells.forEach(c => {
+                c.classList.remove('nearby');
+                c.classList.remove('flipped');
+            });
         });
     }
 });
