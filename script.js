@@ -135,13 +135,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fill grid with cells
         const updateGrid = () => {
+            // Remove existing cells
             heroMeshGrid.querySelectorAll('.mesh-cell').forEach(c => c.remove());
             cells = [];
             
             const cellSize = 80;
-            const cols = Math.ceil(window.innerWidth / cellSize) + 2;
-            const rows = Math.ceil(heroSection.offsetHeight / cellSize) + 2;
+            const viewportWidth = window.innerWidth;
+            // Use the larger of offsetHeight or a safe minimum to ensure full coverage
+            const sectionHeight = Math.max(heroSection.offsetHeight, 900); 
+            
+            const cols = Math.ceil(viewportWidth / cellSize);
+            const rows = Math.ceil(sectionHeight / cellSize);
             const totalCells = cols * rows;
+
+            const fragment = document.createDocumentFragment();
 
             for (let i = 0; i < totalCells; i++) {
                 const cell = document.createElement('div');
@@ -160,12 +167,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 inner.appendChild(front);
                 inner.appendChild(back);
                 cell.appendChild(inner);
-                heroMeshGrid.appendChild(cell);
+                fragment.appendChild(cell);
                 cells.push(cell);
             }
+            heroMeshGrid.appendChild(fragment);
         };
 
-        updateGrid();
+        // Initial build with a small delay to ensure section height is rendered
+        setTimeout(updateGrid, 100);
+        
         window.addEventListener('resize', updateGrid);
 
         // Interaction logic on the entire hero section
@@ -180,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Proximity & Flip logic
             const range = 180;
-            const flipRange = 50;
+            const flipRange = 40; // Tightened for precision
 
             cells.forEach(cell => {
                 const cellRect = cell.getBoundingClientRect();

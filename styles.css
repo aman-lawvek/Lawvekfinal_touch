@@ -240,7 +240,7 @@ h1, h2, h3, h4, h5 {
     height: 80px;
     perspective: 1000px;
     cursor: default;
-    border: 0.5px solid rgba(215, 209, 251, 0.2);
+    border: 1px solid rgba(215, 209, 251, 0.4); /* Increased visibility */
     box-sizing: border-box;
     transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1), background-color 0.4s ease;
 }
