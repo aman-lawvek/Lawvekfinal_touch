@@ -125,25 +125,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = true;
                 submitBtn.innerText = 'Processing...';
 
+                // Convert FormData to URLSearchParams for better GAS compatibility
                 const formData = new FormData(bookingForm);
+                const params = new URLSearchParams();
+                for (const pair of formData.entries()) {
+                    params.append(pair[0], pair[1]);
+                }
                 
-                fetch(scriptURL, { method: 'POST', body: formData })
-                    .then(response => {
-                        // Success State
-                        bookingForm.innerHTML = `
-                            <div class="success-message">
-                                <div class="success-icon">✓</div>
-                                <h3>You're in!</h3>
-                                <p>We'll be in touch within 24 hours to schedule your personalized demo.</p>
-                            </div>
-                        `;
-                    })
-                    .catch(error => {
-                        console.error('Error!', error.message);
-                        alert('Something went wrong. Please try again.');
-                        submitBtn.disabled = false;
-                        submitBtn.innerText = 'Request Demo';
-                    });
+                fetch(scriptURL, { 
+                    method: 'POST', 
+                    body: params,
+                    mode: 'no-cors' // This avoids CORS issues with GAS redirects
+                })
+                .then(() => {
+                    // Success State (Note: with no-cors we can't read the response, so we assume success)
+                    bookingForm.innerHTML = `
+                        <div class="success-message">
+                            <div class="success-icon">✓</div>
+                            <h3>You're in!</h3>
+                            <p>We'll be in touch within 24 hours to schedule your personalized demo.</p>
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error!', error.message);
+                    alert('Something went wrong. Please try again.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Request Demo';
+                });
             });
         }
     }
