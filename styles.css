@@ -200,44 +200,88 @@ h1, h2, h3, h4, h5 {
 /* Premium Mesh & Floating Elements */
 .hero-mesh {
     position: absolute;
-    top: -10%; left: -10%; right: -10%; bottom: -10%;
+    top: 0; left: 0; right: 0; bottom: 0;
     z-index: 0;
-    background-image: 
-        linear-gradient(to right, rgba(215, 209, 251, 0.8) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(215, 209, 251, 0.8) 1px, transparent 1px);
-    background-size: 80px 80px;
-    background-position: center top;
-    animation: breatheMesh 8s infinite alternate ease-in-out;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 80px);
+    grid-template-rows: repeat(auto-fill, 80px);
+    justify-content: center;
+    align-content: flex-start;
+    padding-top: 100px;
     pointer-events: none;
-    mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
-    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
-}
-@keyframes breatheMesh {
-    0% { opacity: 0.3; transform: scale(1); }
-    100% { opacity: 1; transform: scale(1.05); }
+    perspective: 1000px;
 }
 
 .mesh-cell {
-    position: absolute;
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, rgba(247, 106, 12, 0.40), rgba(247, 106, 12, 0.15));
-    border: 1px solid rgba(247, 106, 12, 0.40);
-    color: rgba(247, 106, 12, 1);
-    font-size: 0.55rem;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    text-transform: uppercase;
+    position: relative;
+    pointer-events: auto;
+    cursor: default;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
+}
+
+.mesh-cell-inner {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+.mesh-cell:hover .mesh-cell-inner {
+    transform: rotateY(180deg);
+}
+
+.mesh-cell-front, .mesh-cell-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border: 0.5px solid rgba(215, 209, 251, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    pointer-events: none;
-    line-height: 1.25;
-    letter-spacing: -0.02em;
-    white-space: nowrap;
-    box-sizing: border-box;
 }
+
+.mesh-cell-front {
+    background: transparent;
+}
+
+.mesh-cell-back {
+    background: #FFFFFF;
+    color: var(--primary-color);
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    transform: rotateY(180deg);
+    box-shadow: inset 0 0 15px rgba(247, 106, 12, 0.05);
+    padding: 10px;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Spotlight Effect */
+.mesh-spotlight {
+    position: absolute;
+    top: 0; left: 0;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(247, 106, 12, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    mix-blend-mode: soft-light;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.hero:hover .mesh-spotlight {
+    opacity: 1;
+}
+
 
 .badge-wrap { margin-bottom: 2rem; }
 .badge {
