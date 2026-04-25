@@ -193,9 +193,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             for (let i = 0; i < cells.length; i++) {
                 const cell = cells[i];
+                const inner = cell.querySelector('.cell-inner');
                 const cRect = cell.getBoundingClientRect();
                 
-                // Check if cell is under any CTA
                 const isExcluded = exclusionZones.some(zone => {
                     return !(cRect.right < zone.left || 
                              cRect.left > zone.right || 
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (isExcluded) {
                     cell.classList.remove('nearby', 'flipped');
-                    cell.style.transform = 'none';
+                    if (inner) inner.style.transform = '';
                     continue;
                 }
 
@@ -213,21 +213,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cY = cRect.top + cRect.height / 2;
                 const dist = Math.hypot(e.clientX - cX, e.clientY - cY);
                 
-                // 7D Depth Tilt Effect
                 if (dist < range) {
                     cell.classList.add('nearby');
-                    const tiltX = (cY - e.clientY) / 10;
-                    const tiltY = (e.clientX - cX) / 10;
-                    cell.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.05)`;
+                    const tiltX = (cY - e.clientY) / 8;
+                    const tiltY = (e.clientX - cX) / 8;
+                    const z = Math.max(0, 30 - dist / 5); // Pop out more when closer
+                    
+                    if (dist < flipRange) {
+                        cell.classList.add('flipped');
+                        inner.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${180 + tiltY}deg) translateZ(50px)`;
+                    } else {
+                        cell.classList.remove('flipped');
+                        inner.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateZ(${z}px) scale(1.1)`;
+                    }
                 } else {
-                    cell.classList.remove('nearby');
-                    cell.style.transform = 'none';
-                }
-
-                if (dist < flipRange) {
-                    cell.classList.add('flipped');
-                } else {
-                    cell.classList.remove('flipped');
+                    cell.classList.remove('nearby', 'flipped');
+                    if (inner) inner.style.transform = '';
                 }
             }
         });

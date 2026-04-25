@@ -276,7 +276,12 @@ h1, h2, h3, h4, h5 {
 }
 
 .mesh-cell.nearby {
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    z-index: 10;
+}
+
+.mesh-cell.nearby .cell-inner {
+    transform: translateZ(20px);
 }
 
 .cell-inner {
@@ -289,7 +294,7 @@ h1, h2, h3, h4, h5 {
 }
 
 .mesh-cell.flipped .cell-inner {
-    transform: rotateY(180deg);
+    transform: rotateY(180deg) translateZ(40px);
 }
 
 .cell-front, .cell-back {
