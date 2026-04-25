@@ -241,6 +241,58 @@ document.addEventListener('DOMContentLoaded', () => {
             lastMouseY = e.clientY;
         });
 
+        // 7. Floating Legal Tags (Lively Parallax - Symmetrical)
+        const floatingTagsList = [
+            'Blacklisting', 'Litigation', 'Cure period', 'Service Credits', 
+            'Rescission', 'Incidental damages', 'Material breach', 
+            'Force majeure', 'Indemnification', 'Disclosure'
+        ];
+
+        const tagElements = [];
+        const midpoint = Math.ceil(floatingTagsList.length / 2);
+
+        const colors = ['color-purple', 'color-orange', 'color-green', 'color-blue'];
+        const leftPositions = [
+            { t: 8, l: 6, r: -5 },   { t: 22, l: 10, r: 3 }, 
+            { t: 38, l: 7, r: -2 },  { t: 50, l: 12, r: 4 }, 
+            { t: 62, l: 9, r: -3 }
+        ];
+        const rightPositions = [
+            { t: 10, r: 4, rot: 5 },  { t: 24, r: 8, rot: -4 }, 
+            { t: 40, r: 4, rot: 2 },  { t: 52, r: 10, rot: -5 }, 
+            { t: 62, r: 6, rot: 3 }
+        ];
+
+        floatingTagsList.forEach((text, i) => {
+            const tag = document.createElement('div');
+            tag.className = 'floating-tag ' + colors[i % colors.length];
+            tag.innerText = text;
+            
+            const isLeft = i < midpoint;
+            const groupIndex = isLeft ? i : i - midpoint;
+            const pos = isLeft ? leftPositions[groupIndex] : rightPositions[groupIndex];
+            
+            if (isLeft) {
+                tag.style.left = pos.l + '%';
+                tag.style.top = pos.t + '%';
+                tag.style.transform = `rotate(${pos.r}deg)`;
+            } else {
+                tag.style.right = pos.r + '%';
+                tag.style.top = pos.t + '%';
+                tag.style.transform = `rotate(${pos.rot}deg)`;
+            }
+            
+            tag.style.animationDelay = (Math.random() * -6) + 's';
+            heroMeshGrid.appendChild(tag);
+
+            tagElements.push({
+                el: tag,
+                baseRotation: isLeft ? pos.r : pos.rot,
+                factorX: (isLeft ? -1 : 1) * (15 + Math.random() * 10),
+                factorY: (Math.random() - 0.5) * 15
+            });
+        });
+
         const updateVisuals = () => {
             // Light lerp for fluid movement without lag
             spotX += (targetX - spotX) * 0.25;
@@ -253,38 +305,37 @@ document.addEventListener('DOMContentLoaded', () => {
             const mouseCol = Math.floor(spotX / cellSize);
             const mouseRow = Math.floor(spotY / cellSize);
 
-            // Dead zone check using lerped coordinates for smoothness
-            let inDeadZone = false;
-            const heroContentElements = heroContent.querySelectorAll('h1, p, a, button, .badge, .hero-dashboard-preview, .btn');
-            const buffer = 10; // Reduced buffer for better feel
+            // Update Floating Tags Parallax
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const moveX = (targetX - centerX) / centerX;
 
-            for (const el of heroContentElements) {
-                const rect = el.getBoundingClientRect();
-                // Use lastMouseX/Y for immediate deadzone response
-                if (lastMouseX >= (rect.left - buffer) && lastMouseX <= (rect.right + buffer) &&
-                    lastMouseY >= (rect.top - buffer) && lastMouseY <= (rect.bottom + buffer)) {
-                    inDeadZone = true;
-                    break;
-                }
-            }
+            tagElements.forEach(tag => {
+                // Horizontal parallax shift + base rotation
+                const tx = -moveX * tag.factorX;
+                tag.el.style.transform = `translateX(${tx}px) rotate(${tag.baseRotation}deg)`;
+                
+                // Professional Fade effect
+                const rect = tag.el.getBoundingClientRect();
+                const dx = (rect.left + rect.width/2) - spotX;
+                const dy = (rect.top + rect.height/2) - spotY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                
+                // Range: 0.3 when far, 1.0 when close
+                const opacity = Math.max(0.3, 1.0 - dist/800);
+                tag.el.style.opacity = opacity;
+            });
 
             for (let r = 0; r < cells.length; r++) {
                 for (let c = 0; c < cells[r].length; c++) {
                     const cellObj = cells[r][c];
                     const dist = Math.sqrt(Math.pow(c - mouseCol, 2) + Math.pow(r - mouseRow, 2));
                     
-                    if (!inDeadZone && r === mouseRow && c === mouseCol) {
-                        if (!cellObj.element.classList.contains('flipped')) {
-                            cellObj.element.classList.add('flipped');
-                        }
-                        cellObj.element.classList.remove('nearby');
-                    } else if (dist < 3) {
-                        cellObj.element.classList.remove('flipped');
+                    if (dist < 3) {
                         if (!cellObj.element.classList.contains('nearby')) {
                             cellObj.element.classList.add('nearby');
                         }
                     } else {
-                        cellObj.element.classList.remove('flipped');
                         cellObj.element.classList.remove('nearby');
                     }
                 }
