@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const updateGrid = () => {
             gridContainer.innerHTML = '';
-            cells = [];
+            cells = []; // This will now be a 2D array for fast lookup
             
             const cellSize = 80;
             const w = window.innerWidth;
@@ -146,28 +146,31 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const cols = Math.ceil(w / cellSize);
             const rows = Math.ceil(h / cellSize);
-            const total = cols * rows;
 
             const fragment = document.createDocumentFragment();
-            for (let i = 0; i < total; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'mesh-cell';
-                
-                const inner = document.createElement('div');
-                inner.className = 'cell-inner';
-                
-                const front = document.createElement('div');
-                front.className = 'cell-front';
-                
-                const back = document.createElement('div');
-                back.className = 'cell-back';
-                back.innerText = terms[Math.floor(Math.random() * terms.length)];
-                
-                inner.appendChild(front);
-                inner.appendChild(back);
-                cell.appendChild(inner);
-                fragment.appendChild(cell);
-                cells.push(cell);
+            for (let r = 0; r < rows; r++) {
+                const rowArray = [];
+                for (let c = 0; c < cols; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'mesh-cell';
+                    
+                    const inner = document.createElement('div');
+                    inner.className = 'cell-inner';
+                    
+                    const front = document.createElement('div');
+                    front.className = 'cell-front';
+                    
+                    const back = document.createElement('div');
+                    back.className = 'cell-back';
+                    back.innerText = terms[Math.floor(Math.random() * terms.length)];
+                    
+                    inner.appendChild(front);
+                    inner.appendChild(back);
+                    cell.appendChild(inner);
+                    fragment.appendChild(cell);
+                    rowArray.push({ element: cell, inner: inner });
+                }
+                cells.push(rowArray);
             }
             gridContainer.appendChild(fragment);
         };
@@ -176,68 +179,94 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('resize', updateGrid);
         window.addEventListener('load', updateGrid);
 
+        let activeCells = new Set();
+
         heroSection.addEventListener('mousemove', (e) => {
             const rect = heroMeshGrid.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
 
-            spotlight.style.left = `${x}px`;
-            spotlight.style.top = `${y}px`;
+            spotlight.style.left = `${mouseX}px`;
+            spotlight.style.top = `${mouseY}px`;
 
-            // Identify Exclusion Zones (CTAs)
+            const cellSize = 80;
+            const range = 200;
+            const flipRange = 40;
+            
+            const centerCol = Math.floor(mouseX / cellSize);
+            const centerRow = Math.floor(mouseY / cellSize);
+            const colRange = Math.ceil(range / cellSize);
+            const rowRange = Math.ceil(range / cellSize);
+
+            // Identify Exclusion Zones (CTAs) - done once per move
             const ctas = document.querySelectorAll('.hero .btn-primary, .hero .hero-badge');
             const exclusionZones = Array.from(ctas).map(cta => cta.getBoundingClientRect());
 
-            const range = 200;
-            const flipRange = 40;
-
-            for (let i = 0; i < cells.length; i++) {
-                const cell = cells[i];
-                const inner = cell.querySelector('.cell-inner');
-                const cRect = cell.getBoundingClientRect();
-                
-                const isExcluded = exclusionZones.some(zone => {
-                    return !(cRect.right < zone.left || 
-                             cRect.left > zone.right || 
-                             cRect.bottom < zone.top || 
-                             cRect.top > zone.bottom);
-                });
-
-                if (isExcluded) {
-                    cell.classList.remove('nearby', 'flipped');
-                    if (inner) inner.style.transform = '';
-                    continue;
-                }
-
+            // Clear previously active cells that are now out of range
+            activeCells.forEach(cellObj => {
+                const cRect = cellObj.element.getBoundingClientRect();
                 const cX = cRect.left + cRect.width / 2;
                 const cY = cRect.top + cRect.height / 2;
                 const dist = Math.hypot(e.clientX - cX, e.clientY - cY);
                 
-                if (dist < range) {
-                    cell.classList.add('nearby');
-                    const tiltX = (cY - e.clientY) / 8;
-                    const tiltY = (e.clientX - cX) / 8;
-                    const z = Math.max(0, 30 - dist / 5); // Pop out more when closer
+                if (dist > range) {
+                    cellObj.element.classList.remove('nearby', 'flipped');
+                    cellObj.inner.style.transform = '';
+                    activeCells.delete(cellObj);
+                }
+            });
+
+            // Update cells in range
+            for (let r = centerRow - rowRange; r <= centerRow + rowRange; r++) {
+                if (r < 0 || r >= cells.length) continue;
+                for (let c = centerCol - colRange; c <= centerCol + colRange; c++) {
+                    if (c < 0 || c >= cells[r].length) continue;
                     
-                    if (dist < flipRange) {
-                        cell.classList.add('flipped');
-                        inner.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${180 + tiltY}deg) translateZ(50px)`;
-                    } else {
-                        cell.classList.remove('flipped');
-                        inner.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateZ(${z}px) scale(1.1)`;
+                    const cellObj = cells[r][c];
+                    const cell = cellObj.element;
+                    const inner = cellObj.inner;
+                    const cRect = cell.getBoundingClientRect();
+                    
+                    const isExcluded = exclusionZones.some(zone => {
+                        return !(cRect.right < zone.left || cRect.left > zone.right || 
+                                 cRect.bottom < zone.top || cRect.top > zone.bottom);
+                    });
+
+                    if (isExcluded) {
+                        cell.classList.remove('nearby', 'flipped');
+                        inner.style.transform = '';
+                        continue;
                     }
-                } else {
-                    cell.classList.remove('nearby', 'flipped');
-                    if (inner) inner.style.transform = '';
+
+                    const cX = cRect.left + cRect.width / 2;
+                    const cY = cRect.top + cRect.height / 2;
+                    const dist = Math.hypot(e.clientX - cX, e.clientY - cY);
+
+                    if (dist < range) {
+                        activeCells.add(cellObj);
+                        cell.classList.add('nearby');
+                        const tiltX = (cY - e.clientY) / 8;
+                        const tiltY = (e.clientX - cX) / 8;
+                        const z = Math.max(0, 30 - dist / 5);
+                        
+                        if (dist < flipRange) {
+                            cell.classList.add('flipped');
+                            inner.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${180 + tiltY}deg) translateZ(50px)`;
+                        } else {
+                            cell.classList.remove('flipped');
+                            inner.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateZ(${z}px) scale(1.1)`;
+                        }
+                    }
                 }
             }
         });
 
         heroSection.addEventListener('mouseleave', () => {
-            cells.forEach(c => {
-                c.classList.remove('nearby');
-                c.classList.remove('flipped');
+            activeCells.forEach(cellObj => {
+                cellObj.element.classList.remove('nearby', 'flipped');
+                cellObj.inner.style.transform = '';
             });
+            activeCells.clear();
         });
     }
 });
