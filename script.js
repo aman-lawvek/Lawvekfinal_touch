@@ -179,8 +179,47 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('resize', updateGrid);
         window.addEventListener('load', updateGrid);
 
-        let activeCells = new Set();
+        let time = 0;
+        const animate = () => {
+            time += 0.005; // Slo-mo speed
+            
+            for (let r = 0; r < cells.length; r++) {
+                for (let c = 0; c < cells[r].length; c++) {
+                    const cellObj = cells[r][c];
+                    const cell = cellObj.element;
+                    const inner = cellObj.inner;
+                    
+                    // Helical Wave Math
+                    const dx = c - (cells[r].length / 2);
+                    const dy = r - (cells.length / 2);
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const angle = Math.atan2(dy, dx);
+                    
+                    // Create helical phase shift
+                    const phase = dist * 0.3 - time + angle;
+                    
+                    // 3D Displacement
+                    const z = Math.sin(phase) * 30 - 20; // Pulsates into the screen
+                    const rotX = Math.cos(phase) * 15;
+                    const rotY = Math.sin(phase) * 15;
+                    
+                    // Apply slomo helical transform
+                    // If the cell is flipped (hover), we add 180 to Y
+                    const isFlipped = cell.classList.contains('flipped');
+                    const baseRotY = isFlipped ? 180 : 0;
+                    
+                    inner.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${baseRotY + rotY}deg) translateZ(${z}px)`;
+                    
+                    // Subtle opacity shift for "lively" effect
+                    cell.style.opacity = 0.5 + Math.sin(phase) * 0.2;
+                }
+            }
+            requestAnimationFrame(animate);
+        };
 
+        requestAnimationFrame(animate);
+
+        // Keep simple hover flip interaction
         heroSection.addEventListener('mousemove', (e) => {
             const rect = heroMeshGrid.getBoundingClientRect();
             const mouseX = e.clientX - rect.left;
@@ -190,83 +229,28 @@ document.addEventListener('DOMContentLoaded', () => {
             spotlight.style.top = `${mouseY}px`;
 
             const cellSize = 80;
-            const range = 200;
-            const flipRange = 40;
-            
-            const centerCol = Math.floor(mouseX / cellSize);
-            const centerRow = Math.floor(mouseY / cellSize);
-            const colRange = Math.ceil(range / cellSize);
-            const rowRange = Math.ceil(range / cellSize);
+            const col = Math.floor(mouseX / cellSize);
+            const row = Math.floor(mouseY / cellSize);
 
-            // Identify Exclusion Zones (CTAs) - done once per move
-            const ctas = document.querySelectorAll('.hero .btn-primary, .hero .hero-badge');
-            const exclusionZones = Array.from(ctas).map(cta => cta.getBoundingClientRect());
-
-            // Clear previously active cells that are now out of range
-            activeCells.forEach(cellObj => {
-                const cRect = cellObj.element.getBoundingClientRect();
-                const cX = cRect.left + cRect.width / 2;
-                const cY = cRect.top + cRect.height / 2;
-                const dist = Math.hypot(e.clientX - cX, e.clientY - cY);
-                
-                if (dist > range) {
-                    cellObj.element.classList.remove('nearby', 'flipped');
-                    cellObj.inner.style.transform = '';
-                    activeCells.delete(cellObj);
-                }
-            });
-
-            // Update cells in range
-            for (let r = centerRow - rowRange; r <= centerRow + rowRange; r++) {
-                if (r < 0 || r >= cells.length) continue;
-                for (let c = centerCol - colRange; c <= centerCol + colRange; c++) {
-                    if (c < 0 || c >= cells[r].length) continue;
-                    
-                    const cellObj = cells[r][c];
-                    const cell = cellObj.element;
-                    const inner = cellObj.inner;
-                    const cRect = cell.getBoundingClientRect();
-                    
-                    const isExcluded = exclusionZones.some(zone => {
-                        return !(cRect.right < zone.left || cRect.left > zone.right || 
-                                 cRect.bottom < zone.top || cRect.top > zone.bottom);
-                    });
-
-                    if (isExcluded) {
-                        cell.classList.remove('nearby', 'flipped');
-                        inner.style.transform = '';
-                        continue;
-                    }
-
-                    const cX = cRect.left + cRect.width / 2;
-                    const cY = cRect.top + cRect.height / 2;
-                    const dist = Math.hypot(e.clientX - cX, e.clientY - cY);
-
-                    if (dist < range) {
-                        activeCells.add(cellObj);
-                        cell.classList.add('nearby');
-                        const tiltX = (cY - e.clientY) / 8;
-                        const tiltY = (e.clientX - cX) / 8;
-                        const z = Math.max(0, 30 - dist / 5);
-                        
-                        if (dist < flipRange) {
-                            cell.classList.add('flipped');
-                            inner.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${180 + tiltY}deg) translateZ(50px)`;
-                        } else {
-                            cell.classList.remove('flipped');
-                            inner.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateZ(${z}px) scale(1.1)`;
-                        }
+            // Reset all flips and set only current
+            for (let r = 0; r < cells.length; r++) {
+                for (let c = 0; c < cells[r].length; c++) {
+                    if (r === row && c === col) {
+                        cells[r][c].element.classList.add('flipped');
+                    } else {
+                        cells[r][c].element.classList.remove('flipped');
                     }
                 }
             }
         });
 
         heroSection.addEventListener('mouseleave', () => {
-            activeCells.forEach(cellObj => {
-                cellObj.element.classList.remove('nearby', 'flipped');
-                cellObj.inner.style.transform = '';
-            });
-            activeCells.clear();
+            for (let r = 0; r < cells.length; r++) {
+                for (let c = 0; c < cells[r].length; c++) {
+                    cells[r][c].element.classList.remove('flipped');
+                }
+            }
         });
+    }
     }
 });
