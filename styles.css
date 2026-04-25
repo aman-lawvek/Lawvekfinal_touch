@@ -213,6 +213,7 @@ h1, h2, h3, h4, h5 {
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
+    background: radial-gradient(circle at center, rgba(15, 23, 42, 0.05) 0%, transparent 80%);
 }
 
 .grid-container {
@@ -221,7 +222,7 @@ h1, h2, h3, h4, h5 {
     align-content: flex-start;
     width: 100%;
     height: 100%;
-    animation: breatheMesh 10s infinite alternate ease-in-out;
+    transform-style: preserve-3d;
 }
 
 @keyframes breatheMesh {
@@ -256,11 +257,11 @@ h1, h2, h3, h4, h5 {
 .mesh-cell {
     width: 80px;
     height: 80px;
-    perspective: 1000px;
+    perspective: 1500px;
     cursor: default;
-    border: 1px solid rgba(15, 23, 42, 0.15); /* Stronger border */
+    border: 0.5px solid rgba(247, 106, 12, 0.05); /* Faint orange border */
     box-sizing: border-box;
-    transition: transform 0.1s ease-out, border-color 0.4s ease;
+    transition: opacity 0.8s ease;
     transform-style: preserve-3d;
 }
 
@@ -299,7 +300,15 @@ h1, h2, h3, h4, h5 {
 }
 
 .cell-front {
-    background: rgba(247, 106, 12, 0.02);
+    background: radial-gradient(circle at center, rgba(247, 106, 12, 0.03) 0%, transparent 70%);
+    color: var(--primary-color);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: center;
+    opacity: 0.6;
 }
 
 .cell-back {

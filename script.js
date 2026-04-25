@@ -117,12 +117,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. Interactive 3D Flip Grid & Spotlight
     const heroMeshGrid = document.querySelector('.hero-mesh');
     
-    if (heroMeshGrid && heroSection) {
         const terms = [
-            'Audits', 'IP Rights', 'Compliance', 'Security', 'Risk', 'SLA', 
-            'Contracts', 'Policies', 'Privacy', 'GDPR', 'SOC2', 'ISO 27001', 
-            'Governance', 'Liability', 'Renewal', 'Penalty', 'Control', 
-            'Tracking', 'Evidence', 'Audit-Ready'
+            'Audit', 'IP Rights', 'Missed Obligation', 'Compliance', 'Security', 
+            'GDPR', 'SOC2', 'ISO 27001', 'Governance', 'Liability', 'Renewal', 
+            'Penalty', 'Control', 'Tracking', 'Evidence', 'Risk', 'Policy', 
+            'Access Control', 'Data Privacy', 'Verification'
         ];
 
         heroMeshGrid.innerHTML = '';
@@ -155,6 +154,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     const front = document.createElement('div');
                     front.className = 'cell-front';
+                    // Show keyword on front, only for a subset of cells to avoid clutter
+                    if (Math.random() > 0.6) {
+                        front.innerText = terms[Math.floor(Math.random() * terms.length)];
+                    }
                     
                     inner.appendChild(front);
                     cell.appendChild(inner);
@@ -172,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let time = 0;
         const animate = () => {
-            time += 0.005;
+            time += 0.003; // Even slower for "natural" galaxy feel
             
             for (let r = 0; r < cells.length; r++) {
                 for (let c = 0; c < cells[r].length; c++) {
@@ -184,14 +187,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     const angle = Math.atan2(dy, dx);
                     
-                    const phase = dist * 0.3 - time + angle;
+                    // Complex helical/galaxy wave
+                    const phase = dist * 0.25 - time + angle * 0.5;
                     
-                    const z = Math.sin(phase) * 30 - 20;
-                    const rotX = Math.cos(phase) * 15;
-                    const rotY = Math.sin(phase) * 15;
+                    // Deeper Z-motion
+                    const z = Math.sin(phase) * 60 - 80; // Moves deeper into screen
+                    const rotX = Math.cos(phase * 0.8) * 20;
+                    const rotY = Math.sin(phase * 0.8) * 20;
                     
-                    inner.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${z}px)`;
-                    cellObj.element.style.opacity = 0.7 + Math.sin(phase) * 0.2;
+                    inner.style.transform = `perspective(1500px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${z}px)`;
+                    
+                    // Galaxy-like fading (natural and lively)
+                    const op = 0.5 + Math.sin(phase) * 0.35;
+                    cellObj.element.style.opacity = Math.max(0, op);
                 }
             }
             requestAnimationFrame(animate);
