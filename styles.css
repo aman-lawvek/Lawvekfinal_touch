@@ -223,6 +223,7 @@ h1, h2, h3, h4, h5 {
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
+    animation: breatheMesh 10s infinite alternate ease-in-out;
 }
 
 @keyframes breatheMesh {
@@ -259,7 +260,7 @@ h1, h2, h3, h4, h5 {
     height: 80px;
     perspective: 1500px;
     cursor: default;
-    border: 0.5px solid rgba(247, 106, 12, 0.05); /* Faint orange border */
+    border: 1px solid rgba(247, 106, 12, 0.15); /* Restored grid visibility */
     box-sizing: border-box;
     transition: opacity 0.8s ease;
     transform-style: preserve-3d;
