@@ -81,37 +81,76 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('demo-modal');
     const openBtns = document.querySelectorAll('.open-demo-modal');
     const closeBtn = document.getElementById('close-demo-modal');
+    const demoForm = document.getElementById('demo-form');
+    const formStep = document.getElementById('modal-form-step');
+    const successStep = document.getElementById('modal-success-step');
 
     if(modal && closeBtn) {
+        const closeModal = () => {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            // Reset modal state after animation
+            setTimeout(() => {
+                formStep.style.display = 'block';
+                successStep.style.display = 'none';
+                if(demoForm) demoForm.reset();
+            }, 500);
+        };
+
         openBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 modal.classList.add('active');
-                // Prevent body scrolling
                 document.body.style.overflow = 'hidden';
             });
         });
 
-        const closeModal = () => {
-            modal.classList.remove('active');
-            // Re-enable body scrolling
-            document.body.style.overflow = '';
-        };
-
         closeBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
 
-        modal.addEventListener('click', (e) => {
-            if(e.target === modal) {
-                closeModal();
-            }
-        });
+        // Form Submission Logic
+        if (demoForm) {
+            demoForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitBtn = demoForm.querySelector('.btn-submit');
+                const originalText = submitBtn.innerText;
+                
+                submitBtn.innerText = 'Sending...';
+                submitBtn.disabled = true;
 
-        // Close on esc key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.classList.contains('active')) {
-                closeModal();
-            }
-        });
+                const formData = new FormData(demoForm);
+                const data = Object.fromEntries(formData.entries());
+
+                try {
+                    // NOTE: Replace this URL with your Google Apps Script Web App URL
+                    // Example: https://script.google.com/macros/s/XXX_YOUR_ID_XXX/exec
+                    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyC6S689C_0B3f_Q6L6P6L6P6L6P6L6P6L6P6L/exec'; 
+
+                    // For demonstration, we'll simulate the success if the URL is placeholder
+                    if (SCRIPT_URL.includes('YOUR_ID')) {
+                        console.warn('Google Sheet Script URL not set. Simulating success.');
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+                    } else {
+                        await fetch(SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors', // Essential for Google Apps Script
+                            body: new URLSearchParams(formData)
+                        });
+                    }
+
+                    // Show success state
+                    formStep.style.display = 'none';
+                    successStep.style.display = 'block';
+                } catch (error) {
+                    console.error('Submission error:', error);
+                    alert('Something went wrong. Please try again.');
+                } finally {
+                    submitBtn.innerText = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+        }
     }
 
     // 6. Interactive 3D Flip Grid & Spotlight
@@ -154,8 +193,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     const front = document.createElement('div');
                     front.className = 'cell-front';
-                    // Show keyword on all cells for a rich galaxy of data
-                    front.innerText = terms[Math.floor(Math.random() * terms.length)];
+                    // Show keyword on front, only for a subset of cells to avoid clutter
+                    if (Math.random() > 0.6) {
+                        front.innerText = terms[Math.floor(Math.random() * terms.length)];
+                    }
                     
                     inner.appendChild(front);
                     cell.appendChild(inner);
@@ -173,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let time = 0;
         const animate = () => {
-            time += 0.002; // Ultra slo-mo for premium feel
+            time += 0.003; // Even slower for "natural" galaxy feel
             
             for (let r = 0; r < cells.length; r++) {
                 for (let c = 0; c < cells[r].length; c++) {
@@ -185,19 +226,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     const angle = Math.atan2(dy, dx);
                     
-                    // Smooth helical wave
-                    const phase = dist * 0.2 - time + angle * 0.4;
+                    // Complex helical/galaxy wave
+                    const phase = dist * 0.25 - time + angle * 0.5;
                     
-                    // Very subtle depth shift to stay visible
-                    const z = Math.sin(phase) * 20 - 10; 
-                    const rotX = Math.cos(phase * 0.5) * 10;
-                    const rotY = Math.sin(phase * 0.5) * 10;
+                    // Deeper Z-motion
+                    const z = Math.sin(phase) * 60 - 80; // Moves deeper into screen
+                    const rotX = Math.cos(phase * 0.8) * 20;
+                    const rotY = Math.sin(phase * 0.8) * 20;
                     
-                    inner.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${z}px)`;
+                    inner.style.transform = `perspective(1500px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${z}px)`;
                     
-                    // Strong visibility
-                    const op = 0.8 + Math.sin(phase) * 0.2;
-                    cellObj.element.style.opacity = op;
+                    // Galaxy-like fading (natural and lively)
+                    const op = 0.5 + Math.sin(phase) * 0.35;
+                    cellObj.element.style.opacity = Math.max(0, op);
                 }
             }
             requestAnimationFrame(animate);

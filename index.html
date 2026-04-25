@@ -826,41 +826,52 @@
     <!-- DEMO MODAL -->
     <div class="modal-overlay" id="demo-modal">
         <div class="modal-container">
-            <div class="modal-header">
-                <h3>Book a <span class="hl-gradient-orange">Demo</span></h3>
-                <button class="modal-close" id="close-demo-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>See how Lawvek automates your enterprise obligations.</p>
-                <form class="demo-form" onsubmit="event.preventDefault(); this.innerHTML = '<div class=\'success-message\'>Thanks! We\'ll be in touch shortly.</div>';">
+            <button class="modal-close" id="close-demo-modal">&times;</button>
+            
+            <div id="modal-form-step">
+                <h2 class="modal-title">Book a Demo</h2>
+                <p class="modal-subtitle">See Lawvek in action. Our team will walk you through a live workflow tailored to your legal operations.</p>
+                
+                <form id="demo-form" class="demo-form">
                     <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" placeholder="John Doe" required>
+                        <label>FULL NAME</label>
+                        <input type="text" name="name" placeholder="Jane Smith" required>
                     </div>
+                    
                     <div class="form-group">
-                        <label>Company</label>
-                        <input type="text" placeholder="Acme Corp" required>
+                        <label>WORK EMAIL</label>
+                        <input type="email" name="email" placeholder="jane@company.com" required>
                     </div>
+                    
                     <div class="form-group">
-                        <label>Role</label>
-                        <div class="custom-select-wrapper">
-                            <select required>
-                                <option value="" disabled selected>Select your role...</option>
-                                <option value="legal">Legal</option>
-                                <option value="tech">Tech & Engineering</option>
-                                <option value="procurement">Procurement</option>
-                                <option value="revenue">Finance & Revenue</option>
-                                <option value="customer_success">Customer Success</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
+                        <label>ROLE</label>
+                        <input type="text" name="role" placeholder="General Counsel, Legal Ops Lead..." required>
                     </div>
+                    
                     <div class="form-group">
-                        <label>Office Email</label>
-                        <input type="email" placeholder="john@acmecorp.com" required>
+                        <label>NUMBER OF EMPLOYEES</label>
+                        <select name="company_size" required>
+                            <option value="" disabled selected>Select company size</option>
+                            <option value="1-50">1-50</option>
+                            <option value="51-200">51-200</option>
+                            <option value="201-500">201-500</option>
+                            <option value="501-1000">501-1000</option>
+                            <option value="1000+">1000+</option>
+                        </select>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100" style="margin-top: 1rem;">Complete Booking</button>
+                    
+                    <button type="submit" class="btn-submit">Request Demo</button>
                 </form>
+            </div>
+
+            <div id="modal-success-step" style="display: none;">
+                <div class="success-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <h2 class="modal-title">You're in!</h2>
+                <p class="modal-subtitle">We'll be in touch within 24 hours to schedule your personalized demo.</p>
             </div>
         </div>
     </div>
