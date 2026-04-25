@@ -129,76 +129,79 @@ document.addEventListener('DOMContentLoaded', () => {
         gridContainer.className = 'grid-container';
         heroMeshGrid.appendChild(gridContainer);
 
-        let galaxyCells = [];
+        let cells = [];
 
-        const updateGalaxy = () => {
+        const updateGrid = () => {
             gridContainer.innerHTML = '';
-            galaxyCells = [];
+            cells = [];
             
-            const numCells = 120; // Number of "stars" in the galaxy
-            const fragment = document.createDocumentFragment();
+            const cellSize = 80;
+            const w = window.innerWidth;
+            const h = Math.max(heroSection.offsetHeight, 1000);
+            
+            const cols = Math.ceil(w / cellSize);
+            const rows = Math.ceil(h / cellSize);
 
-            for (let i = 0; i < numCells; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'mesh-cell';
-                
-                const inner = document.createElement('div');
-                inner.className = 'cell-inner';
-                
-                const front = document.createElement('div');
-                front.className = 'cell-front';
-                
-                // Spiral parameters
-                const angleOffset = i * 0.15;
-                const radiusOffset = i * 5;
-                
-                if (Math.random() > 0.4) {
-                    front.innerText = terms[Math.floor(Math.random() * terms.length)];
+            const fragment = document.createDocumentFragment();
+            for (let r = 0; r < rows; r++) {
+                const rowArray = [];
+                for (let c = 0; c < cols; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'mesh-cell';
+                    
+                    const inner = document.createElement('div');
+                    inner.className = 'cell-inner';
+                    
+                    const front = document.createElement('div');
+                    front.className = 'cell-front';
+                    // Show keyword on front, with higher density (80%)
+                    if (Math.random() > 0.2) {
+                        front.innerText = terms[Math.floor(Math.random() * terms.length)];
+                    }
+                    
+                    inner.appendChild(front);
+                    cell.appendChild(inner);
+                    fragment.appendChild(cell);
+                    rowArray.push({ element: cell, inner: inner });
                 }
-                
-                inner.appendChild(front);
-                cell.appendChild(inner);
-                fragment.appendChild(cell);
-                
-                galaxyCells.push({
-                    element: cell,
-                    inner: inner,
-                    angle: angleOffset,
-                    radius: radiusOffset,
-                    speed: 0.2 + Math.random() * 0.5
-                });
+                cells.push(rowArray);
             }
             gridContainer.appendChild(fragment);
         };
 
-        updateGalaxy();
-        window.addEventListener('resize', updateGalaxy);
+        updateGrid();
+        window.addEventListener('resize', updateGrid);
+        window.addEventListener('load', updateGrid);
 
         let time = 0;
         const animate = () => {
-            time += 0.002; // Super smooth slo-mo
+            time += 0.003; // Even slower for "natural" galaxy feel
             
-            galaxyCells.forEach((cell, i) => {
-                const currentAngle = cell.angle + time * cell.speed;
-                const currentRadius = cell.radius + Math.sin(time + i) * 20;
-                
-                // Helical spiral positioning
-                const x = Math.cos(currentAngle) * currentRadius;
-                const y = Math.sin(currentAngle) * currentRadius;
-                const z = Math.sin(time * 0.5 + i * 0.1) * 100 - 150; // Deep 3D pulse
-                
-                // Rotations for 7D effect
-                const rotX = Math.cos(currentAngle) * 20;
-                const rotY = Math.sin(currentAngle) * 20;
-                
-                cell.element.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-                cell.inner.style.transform = `perspective(1500px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${z}px)`;
-                
-                // Galaxy fading
-                const op = 0.4 + Math.sin(time + i * 0.2) * 0.4;
-                cell.element.style.opacity = Math.max(0, op);
-            });
-            
+            for (let r = 0; r < cells.length; r++) {
+                for (let c = 0; c < cells[r].length; c++) {
+                    const cellObj = cells[r][c];
+                    const inner = cellObj.inner;
+                    
+                    const dx = c - (cells[r].length / 2);
+                    const dy = r - (cells.length / 2);
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const angle = Math.atan2(dy, dx);
+                    
+                    // Complex helical/galaxy wave
+                    const phase = dist * 0.25 - time + angle * 0.5;
+                    
+                    // Deeper Z-motion
+                    const z = Math.sin(phase) * 60 - 80; // Moves deeper into screen
+                    const rotX = Math.cos(phase * 0.8) * 20;
+                    const rotY = Math.sin(phase * 0.8) * 20;
+                    
+                    inner.style.transform = `perspective(1500px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${z}px)`;
+                    
+                    // Galaxy-like fading (natural and lively)
+                    const op = 0.5 + Math.sin(phase) * 0.35;
+                    cellObj.element.style.opacity = Math.max(0, op);
+                }
+            }
             requestAnimationFrame(animate);
         };
 

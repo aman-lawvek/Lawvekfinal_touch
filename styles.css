@@ -185,11 +185,16 @@ h1, h2, h3, h4, h5 {
 
 /* Hero Section */
 .hero {
-    position: relative;
-    padding: 160px 0 100px;
-    background: radial-gradient(circle at center, #ffffff 0%, #f8fafc 100%);
+    padding: 8rem 0 5rem 0;
+    background-color: #020617; /* Deep space dark background */
+    text-align: center;
     overflow: hidden;
-    min-height: 900px;
+    position: relative;
+    min-height: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white; /* Default text color to white for hero */
 }
 
 .hero-content {
@@ -251,24 +256,13 @@ h1, h2, h3, h4, h5 {
 }
 
 .mesh-cell {
-    position: absolute; /* Changed for spiral positioning */
-    width: 60px; /* Slightly smaller for galaxy density */
-    height: 60px;
+    width: 80px;
+    height: 80px;
     perspective: 1500px;
     cursor: default;
-    border: none;
+    border: 1px solid rgba(247, 106, 12, 0.1);
     box-sizing: border-box;
-    transition: opacity 1s ease;
-    transform-style: preserve-3d;
-}
-
-.grid-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    height: 100%;
-    transform: translate(-50%, -50%);
+    transition: opacity 0.8s ease;
     transform-style: preserve-3d;
 }
 
@@ -307,15 +301,28 @@ h1, h2, h3, h4, h5 {
 }
 
 .cell-front {
-    background: radial-gradient(circle at center, rgba(247, 106, 12, 0.03) 0%, transparent 70%);
-    color: var(--primary-color);
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+    color: #fca5a5; /* Soft light orange/red for text */
     font-family: 'Instrument Sans', sans-serif;
-    font-size: 0.5rem;
-    font-weight: 700;
+    font-size: 0.55rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
     text-align: center;
-    opacity: 0.6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5), inset 0 0 10px rgba(247, 106, 12, 0.1);
+}
+
+.hero-content h1 {
+    color: white;
+}
+
+.hero-content p {
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .cell-back {
