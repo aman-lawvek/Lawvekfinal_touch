@@ -826,52 +826,58 @@
     <!-- DEMO MODAL -->
     <div class="modal-overlay" id="demo-modal">
         <div class="modal-container">
-            <button class="modal-close" id="close-demo-modal">&times;</button>
-            
-            <div id="modal-form-step">
-                <h2 class="modal-title">Book a Demo</h2>
-                <p class="modal-subtitle">See Lawvek in action. Our team will walk you through a live workflow tailored to your legal operations.</p>
-                
-                <form id="demo-form" class="demo-form">
-                    <div class="form-group">
-                        <label>FULL NAME</label>
-                        <input type="text" name="name" placeholder="Jane Smith" required>
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span class="badge">Enterprise Ready</span>
+                    <h3>Book your <span class="hl-gradient-orange">Strategic Demo</span></h3>
+                    <p>Experience the future of automated obligation management.</p>
+                </div>
+                <button class="modal-close" id="close-demo-modal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="demo-form" id="booking-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="form-name">Full Name</label>
+                            <input type="text" id="form-name" name="name" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="form-company">Company</label>
+                            <input type="text" id="form-company" name="company" placeholder="Acme Corp" required>
+                        </div>
                     </div>
-                    
                     <div class="form-group">
-                        <label>WORK EMAIL</label>
-                        <input type="email" name="email" placeholder="jane@company.com" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>ROLE</label>
-                        <input type="text" name="role" placeholder="General Counsel, Legal Ops Lead..." required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>NUMBER OF EMPLOYEES</label>
-                        <select name="company_size" required>
-                            <option value="" disabled selected>Select company size</option>
-                            <option value="1-50">1-50</option>
-                            <option value="51-200">51-200</option>
-                            <option value="201-500">201-500</option>
-                            <option value="501-1000">501-1000</option>
-                            <option value="1000+">1000+</option>
+                        <label for="form-role">Your Role</label>
+                        <select id="form-role" name="role" required>
+                            <option value="" disabled selected>Select your role...</option>
+                            <option value="Legal">Legal</option>
+                            <option value="Compliance">Compliance</option>
+                            <option value="Operations">Operations</option>
+                            <option value="IT/Security">IT/Security</option>
+                            <option value="Executive">Executive</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
-                    
-                    <button type="submit" class="btn-submit">Request Demo</button>
+                    <div class="form-group">
+                        <label for="form-email">Work Email</label>
+                        <input type="email" id="form-email" name="email" placeholder="john@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="form-message">What is your primary challenge?</label>
+                        <textarea id="form-message" name="message" placeholder="e.g., Managing contract renewals, audit preparation..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" id="submit-btn">
+                        <span>Send Booking Request</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 8px;">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
                 </form>
-            </div>
-
-            <div id="modal-success-step" style="display: none;">
-                <div class="success-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </div>
-                <h2 class="modal-title">You're in!</h2>
-                <p class="modal-subtitle">We'll be in touch within 24 hours to schedule your personalized demo.</p>
+                <div id="form-status" class="form-status"></div>
             </div>
         </div>
     </div>

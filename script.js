@@ -77,78 +77,70 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 5. Modal Logic
+    // 5. Modal Logic & Google Sheets Integration
     const modal = document.getElementById('demo-modal');
     const openBtns = document.querySelectorAll('.open-demo-modal');
     const closeBtn = document.getElementById('close-demo-modal');
-    const demoForm = document.getElementById('demo-form');
-    const formStep = document.getElementById('modal-form-step');
-    const successStep = document.getElementById('modal-success-step');
+    const bookingForm = document.getElementById('booking-form');
+    const formStatus = document.getElementById('form-status');
+    const submitBtn = document.getElementById('submit-btn');
+
+    // IMPORTANT: Replace this with your Google Apps Script Web App URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz_HkE8I2P69Zf0R7y2f0Z_6Z0Z6Z0Z6Z0Z/exec'; 
 
     if(modal && closeBtn) {
+        const openModal = (e) => {
+            e.preventDefault();
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            // Clear status when opening
+            if(formStatus) {
+                formStatus.style.display = 'none';
+                formStatus.className = 'form-status';
+            }
+        };
+
         const closeModal = () => {
             modal.classList.remove('active');
             document.body.style.overflow = '';
-            // Reset modal state after animation
-            setTimeout(() => {
-                formStep.style.display = 'block';
-                successStep.style.display = 'none';
-                if(demoForm) demoForm.reset();
-            }, 500);
         };
 
-        openBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            });
-        });
-
+        openBtns.forEach(btn => btn.addEventListener('click', openModal));
         closeBtn.addEventListener('click', closeModal);
         modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
 
-        // Form Submission Logic
-        if (demoForm) {
-            demoForm.addEventListener('submit', async (e) => {
+        // Form Submission to Google Sheets
+        if(bookingForm) {
+            bookingForm.addEventListener('submit', e => {
                 e.preventDefault();
-                const submitBtn = demoForm.querySelector('.btn-submit');
-                const originalText = submitBtn.innerText;
                 
-                submitBtn.innerText = 'Sending...';
+                // Visual feedback
                 submitBtn.disabled = true;
+                const btnText = submitBtn.querySelector('span');
+                const originalText = btnText.innerText;
+                btnText.innerText = 'Processing...';
 
-                const formData = new FormData(demoForm);
-                const data = Object.fromEntries(formData.entries());
-
-                try {
-                    // NOTE: Replace this URL with your Google Apps Script Web App URL
-                    // Example: https://script.google.com/macros/s/XXX_YOUR_ID_XXX/exec
-                    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyC6S689C_0B3f_Q6L6P6L6P6L6P6L6P6L6P6L/exec'; 
-
-                    // For demonstration, we'll simulate the success if the URL is placeholder
-                    if (SCRIPT_URL.includes('YOUR_ID')) {
-                        console.warn('Google Sheet Script URL not set. Simulating success.');
-                        await new Promise(resolve => setTimeout(resolve, 1500));
-                    } else {
-                        await fetch(SCRIPT_URL, {
-                            method: 'POST',
-                            mode: 'no-cors', // Essential for Google Apps Script
-                            body: new URLSearchParams(formData)
-                        });
-                    }
-
-                    // Show success state
-                    formStep.style.display = 'none';
-                    successStep.style.display = 'block';
-                } catch (error) {
-                    console.error('Submission error:', error);
-                    alert('Something went wrong. Please try again.');
-                } finally {
-                    submitBtn.innerText = originalText;
-                    submitBtn.disabled = false;
-                }
+                const formData = new FormData(bookingForm);
+                
+                fetch(scriptURL, { method: 'POST', body: formData })
+                    .then(response => {
+                        formStatus.innerText = 'Success! Your demo is booked.';
+                        formStatus.className = 'form-status success';
+                        bookingForm.reset();
+                        submitBtn.disabled = false;
+                        btnText.innerText = originalText;
+                        
+                        // Close modal after delay
+                        setTimeout(closeModal, 2500);
+                    })
+                    .catch(error => {
+                        console.error('Error!', error.message);
+                        formStatus.innerText = 'Something went wrong. Please try again.';
+                        formStatus.className = 'form-status error';
+                        submitBtn.disabled = false;
+                        btnText.innerText = originalText;
+                    });
             });
         }
     }
