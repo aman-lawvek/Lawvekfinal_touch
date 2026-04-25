@@ -84,154 +84,120 @@ document.addEventListener('DOMContentLoaded', () => {
     const bookingForm = document.getElementById('booking-form');
     const submitBtn = document.getElementById('submit-btn');
 
-    // IMPORTANT: Replace this with your Google Apps Script Web App URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbz_HkE8I2P69Zf0R7y2f0Z_6Z0Z6Z0Z6Z0Z/exec'; 
+    // Google Apps Script Web App URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz5-KfpP9xi2v4cmido9GwnWZORfMGladEppFxMTh5culCWh52FvSIqScaxQNNJo2kPcw/exec';
 
     if(modal && closeBtn) {
-        const openModal = (e) => {
-            e.preventDefault();
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        };
+        openBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                modal.classList.add('active');
+                // Prevent body scrolling
+                document.body.style.overflow = 'hidden';
+            });
+        });
 
         const closeModal = () => {
             modal.classList.remove('active');
+            // Re-enable body scrolling
             document.body.style.overflow = '';
         };
 
-        openBtns.forEach(btn => btn.addEventListener('click', openModal));
         closeBtn.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
 
-        if(bookingForm) {
+        modal.addEventListener('click', (e) => {
+            if(e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Close on esc key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+
+        // Handle Form Submission
+        if (bookingForm) {
             bookingForm.addEventListener('submit', e => {
                 e.preventDefault();
                 submitBtn.disabled = true;
-                const originalText = submitBtn.innerText;
                 submitBtn.innerText = 'Processing...';
 
                 const formData = new FormData(bookingForm);
                 
                 fetch(scriptURL, { method: 'POST', body: formData })
                     .then(response => {
-                        alert('Success! Your demo is booked.');
-                        bookingForm.reset();
-                        submitBtn.disabled = false;
-                        submitBtn.innerText = originalText;
-                        closeModal();
+                        // Success State
+                        bookingForm.innerHTML = `
+                            <div class="success-message">
+                                <div class="success-icon">✓</div>
+                                <h3>You're in!</h3>
+                                <p>We'll be in touch within 24 hours to schedule your personalized demo.</p>
+                            </div>
+                        `;
                     })
                     .catch(error => {
                         console.error('Error!', error.message);
                         alert('Something went wrong. Please try again.');
                         submitBtn.disabled = false;
-                        submitBtn.innerText = originalText;
+                        submitBtn.innerText = 'Request Demo';
                     });
             });
         }
     }
 
-    // 6. Interactive 3D Flip Grid & Spotlight
-    const heroSection = document.querySelector('.hero');
+    // 6. Random Static Hero Grid Overlay
     const heroMeshGrid = document.querySelector('.hero-mesh');
-    
-    if (heroMeshGrid && heroSection) {
-        const terms = [
-            'Audits', 'IP Rights', 'Compliance', 'Obligation Management', 
-            'Security', 'Risk', 'SLA', 'Contracts', 'Policies', 'Privacy', 
-            'GDPR', 'SOC2', 'ISO 27001', 'Governance', 'Liability', 'Renewal',
-            'Penalty', 'Control', 'Accountability', 'Verification'
-        ];
-
-        heroMeshGrid.innerHTML = '';
-        const gridContainer = document.createElement('div');
-        gridContainer.className = 'grid-container';
-        heroMeshGrid.appendChild(gridContainer);
-
-        const spotlight = document.createElement('div');
-        spotlight.className = 'hero-spotlight';
-        heroMeshGrid.appendChild(spotlight);
-
-        let cells = [];
-
-        const updateGrid = () => {
-            gridContainer.innerHTML = '';
-            cells = [];
+    if (heroMeshGrid) {
+        const terms = ['Audit', 'Liability', 'Termination', 'SLA Breach', 'Renewal', 'IP Rights', 'Penalty', 'Payment', 'Risk', 'Control'];
+        // Shuffle and pick 7
+        const shuffledTerms = terms.sort(() => 0.5 - Math.random()).slice(0, 7);
+        
+        // Define safe grid columns tightly constrained to remain on-screen 
+        // but fully clear the central text container block 
+        const safeCols = [-8, -7, -6, 6, 7, 8];
+        const chosenCoords = [];
+        
+        shuffledTerms.forEach(term => {
+            let col, row;
+            let attempts = 0;
+            let isValid = false;
             
-            const cellSize = 80;
-            const w = window.innerWidth;
-            const h = Math.max(heroSection.offsetHeight, 1000);
+            // Re-roll to ensure no two tiles sit in the exact same spot OR touch horizontally/vertically/diagonally
+            do {
+                col = safeCols[Math.floor(Math.random() * safeCols.length)];
+                row = Math.floor(Math.random() * 5) + 1; // 1 to 5 y-axis rows to avoid hiding near dashboard bottom
+                
+                isValid = true;
+                for (const existing of chosenCoords) {
+                    const colDiff = Math.abs(existing.col - col);
+                    const rowDiff = Math.abs(existing.row - row);
+                    
+                    if (colDiff <= 1 && rowDiff <= 1) {
+                        isValid = false; // Blocks immediate neighbors and diagonals completely
+                        break;
+                    }
+                }
+                attempts++;
+            } while (!isValid && attempts < 100);
             
-            const cols = Math.ceil(w / cellSize);
-            const rows = Math.ceil(h / cellSize);
-            const total = cols * rows;
-
-            const fragment = document.createDocumentFragment();
-            for (let i = 0; i < total; i++) {
+            if (isValid) {
+                chosenCoords.push({ col, row });
+                
+                // Mathematically align them to the center-originating CSS grid
+                const leftPos = `calc(50% - 40px + ${col * 80}px)`;
+                const topPos = `${row * 80}px`;
+                
                 const cell = document.createElement('div');
                 cell.className = 'mesh-cell';
+                cell.style.left = leftPos;
+                cell.style.top = topPos;
+                cell.innerText = term;
                 
-                const inner = document.createElement('div');
-                inner.className = 'cell-inner';
-                
-                const front = document.createElement('div');
-                front.className = 'cell-front';
-                
-                const back = document.createElement('div');
-                back.className = 'cell-back';
-                back.innerText = terms[Math.floor(Math.random() * terms.length)];
-                
-                inner.appendChild(front);
-                inner.appendChild(back);
-                cell.appendChild(inner);
-                fragment.appendChild(cell);
-                cells.push(cell);
+                heroMeshGrid.appendChild(cell);
             }
-            gridContainer.appendChild(fragment);
-        };
-
-        updateGrid();
-        window.addEventListener('resize', updateGrid);
-        window.addEventListener('load', updateGrid);
-
-        heroSection.addEventListener('mousemove', (e) => {
-            const rect = heroMeshGrid.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            spotlight.style.left = `${x}px`;
-            spotlight.style.top = `${y}px`;
-
-            const range = 220;
-            const flipRange = 65;
-
-            for (let i = 0; i < cells.length; i++) {
-                const cell = cells[i];
-                const cRect = cell.getBoundingClientRect();
-                const cX = cRect.left + cRect.width / 2;
-                const cY = cRect.top + cRect.height / 2;
-                
-                const dist = Math.hypot(e.clientX - cX, e.clientY - cY);
-                
-                if (dist < range) {
-                    cell.classList.add('nearby');
-                } else {
-                    cell.classList.remove('nearby');
-                }
-
-                if (dist < flipRange) {
-                    cell.classList.add('flipped');
-                } else {
-                    cell.classList.remove('flipped');
-                }
-            }
-        });
-
-        heroSection.addEventListener('mouseleave', () => {
-            cells.forEach(c => {
-                c.classList.remove('nearby');
-                c.classList.remove('flipped');
-            });
         });
     }
 });
