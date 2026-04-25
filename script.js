@@ -126,100 +126,101 @@ document.addEventListener('DOMContentLoaded', () => {
             'Penalty', 'Control', 'Accountability', 'Verification'
         ];
 
-        // Clear and setup containers
-        heroMeshGrid.innerHTML = '';
-        const gridContainer = document.createElement('div');
-        gridContainer.className = 'grid-container';
-        heroMeshGrid.appendChild(gridContainer);
+        // Setup containers
+        const setupMesh = () => {
+            heroMeshGrid.innerHTML = '';
+            const gridContainer = document.createElement('div');
+            gridContainer.className = 'grid-container';
+            heroMeshGrid.appendChild(gridContainer);
 
-        const spotlight = document.createElement('div');
-        spotlight.className = 'hero-spotlight';
-        heroMeshGrid.appendChild(spotlight);
+            const spotlight = document.createElement('div');
+            spotlight.className = 'hero-spotlight';
+            heroMeshGrid.appendChild(spotlight);
 
-        let cells = [];
+            let cells = [];
 
-        const updateGrid = () => {
-            gridContainer.innerHTML = '';
-            cells = [];
-            
-            const cellSize = 80;
-            const viewportWidth = window.innerWidth;
-            const sectionHeight = Math.max(heroSection.offsetHeight, 1000); 
-            
-            const cols = Math.ceil(viewportWidth / cellSize);
-            const rows = Math.ceil(sectionHeight / cellSize);
-            const totalCells = cols * rows;
-
-            const fragment = document.createDocumentFragment();
-
-            for (let i = 0; i < totalCells; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'mesh-cell';
+            const updateGrid = () => {
+                gridContainer.innerHTML = '';
+                cells = [];
                 
-                const inner = document.createElement('div');
-                inner.className = 'cell-inner';
+                const cellSize = 80;
+                const viewportWidth = window.innerWidth;
+                const sectionHeight = Math.max(heroSection.scrollHeight, heroSection.offsetHeight, 1000); 
                 
-                const front = document.createElement('div');
-                front.className = 'cell-front';
-                
-                const back = document.createElement('div');
-                back.className = 'cell-back';
-                back.innerText = terms[Math.floor(Math.random() * terms.length)];
-                
-                inner.appendChild(front);
-                inner.appendChild(back);
-                cell.appendChild(inner);
-                fragment.appendChild(cell);
-                cells.push(cell);
-            }
-            gridContainer.appendChild(fragment);
+                const cols = Math.ceil(viewportWidth / cellSize) + 1;
+                const rows = Math.ceil(sectionHeight / cellSize) + 1;
+                const totalCells = cols * rows;
+
+                const fragment = document.createDocumentFragment();
+
+                for (let i = 0; i < totalCells; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'mesh-cell';
+                    
+                    const inner = document.createElement('div');
+                    inner.className = 'cell-inner';
+                    
+                    const front = document.createElement('div');
+                    front.className = 'cell-front';
+                    
+                    const back = document.createElement('div');
+                    back.className = 'cell-back';
+                    back.innerText = terms[Math.floor(Math.random() * terms.length)];
+                    
+                    inner.appendChild(front);
+                    inner.appendChild(back);
+                    cell.appendChild(inner);
+                    fragment.appendChild(cell);
+                    cells.push(cell);
+                }
+                gridContainer.appendChild(fragment);
+            };
+
+            updateGrid();
+            window.addEventListener('resize', updateGrid);
+
+            // Interaction logic
+            heroSection.addEventListener('mousemove', (e) => {
+                const rect = heroMeshGrid.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                spotlight.style.left = `${x}px`;
+                spotlight.style.top = `${y}px`;
+
+                const range = 200;
+                const flipRange = 60;
+
+                cells.forEach(cell => {
+                    const cellRect = cell.getBoundingClientRect();
+                    const cellX = cellRect.left + cellRect.width / 2;
+                    const cellY = cellRect.top + cellRect.height / 2;
+                    
+                    const dist = Math.hypot(e.clientX - cellX, e.clientY - cellY);
+                    
+                    if (dist < range) {
+                        cell.classList.add('nearby');
+                    } else {
+                        cell.classList.remove('nearby');
+                    }
+
+                    if (dist < flipRange) {
+                        cell.classList.add('flipped');
+                    } else {
+                        cell.classList.remove('flipped');
+                    }
+                });
+            });
+
+            heroSection.addEventListener('mouseleave', () => {
+                cells.forEach(cell => {
+                    cell.classList.remove('nearby');
+                    cell.classList.remove('flipped');
+                });
+            });
         };
 
-        // Initial build
-        updateGrid();
-        // Retry once after a short delay to catch late layout shifts
-        setTimeout(updateGrid, 500);
-        
-        window.addEventListener('resize', updateGrid);
-
-        // Interaction logic
-        heroSection.addEventListener('mousemove', (e) => {
-            const rect = heroMeshGrid.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            spotlight.style.left = `${x}px`;
-            spotlight.style.top = `${y}px`;
-
-            const range = 200;
-            const flipRange = 60;
-
-            cells.forEach(cell => {
-                const cellRect = cell.getBoundingClientRect();
-                const cellX = cellRect.left + cellRect.width / 2;
-                const cellY = cellRect.top + cellRect.height / 2;
-                
-                const dist = Math.hypot(e.clientX - cellX, e.clientY - cellY);
-                
-                if (dist < range) {
-                    cell.classList.add('nearby');
-                } else {
-                    cell.classList.remove('nearby');
-                }
-
-                if (dist < flipRange) {
-                    cell.classList.add('flipped');
-                } else {
-                    cell.classList.remove('flipped');
-                }
-            });
-        });
-
-        heroSection.addEventListener('mouseleave', () => {
-            cells.forEach(cell => {
-                cell.classList.remove('nearby');
-                cell.classList.remove('flipped');
-            });
-        });
+        // Run setup
+        setupMesh();
     }
 });

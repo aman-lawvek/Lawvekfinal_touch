@@ -190,6 +190,10 @@ h1, h2, h3, h4, h5 {
     text-align: center;
     overflow: hidden;
     position: relative;
+    min-height: 800px; /* Ensure space for the grid */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .hero-content {
@@ -243,7 +247,7 @@ h1, h2, h3, h4, h5 {
     height: 80px;
     perspective: 1000px;
     cursor: default;
-    border: 1px solid rgba(215, 209, 251, 0.4); /* Increased visibility */
+    border: 1px solid rgba(215, 209, 251, 0.6); /* Strengthened border */
     box-sizing: border-box;
     transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1), background-color 0.4s ease;
 }
@@ -274,7 +278,8 @@ h1, h2, h3, h4, h5 {
 }
 
 .cell-front {
-    background: transparent;
+    background: rgba(215, 209, 251, 0.05); /* Subtle background to make it visible */
+    border-radius: 2px;
 }
 
 .cell-back {
