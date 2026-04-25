@@ -186,7 +186,7 @@ h1, h2, h3, h4, h5 {
 /* Hero Section */
 .hero {
     padding: 8rem 0 5rem 0;
-    background-color: #020617; /* Deep space dark background */
+    background-color: var(--bg-base);
     text-align: center;
     overflow: hidden;
     position: relative;
@@ -194,7 +194,6 @@ h1, h2, h3, h4, h5 {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    color: white; /* Default text color to white for hero */
 }
 
 .hero-content {
@@ -301,8 +300,8 @@ h1, h2, h3, h4, h5 {
 }
 
 .cell-front {
-    background: linear-gradient(135deg, rgba(51, 65, 85, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%); /* Lighter lifted block */
-    color: #ffedd5; /* Very light orange for text */
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); /* Sharp dark lifted block */
+    color: #f8fafc; /* Crisp white text */
     font-family: 'Instrument Sans', sans-serif;
     font-size: 0.6rem;
     font-weight: 800;
@@ -314,16 +313,16 @@ h1, h2, h3, h4, h5 {
     justify-content: center;
     padding: 8px;
     border-radius: 6px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(247, 106, 12, 0.2);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    border-bottom: 3px solid rgba(0,0,0,0.3); /* Lifted bottom edge */
 }
 
 .hero-content h1 {
-    color: white;
+    color: var(--primary-color);
 }
 
 .hero-content p {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-muted);
 }
 
 .cell-back {
