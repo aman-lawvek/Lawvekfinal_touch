@@ -132,10 +132,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const generateGrid = () => {
             heroMeshGrid.innerHTML = '';
+            // Ensure we have a height, fallback to window height if hero is collapsed initially
+            const heroHeight = heroSection.offsetHeight || window.innerHeight;
             const columns = Math.ceil(window.innerWidth / 80) + 1;
-            const rows = Math.ceil(heroSection.offsetHeight / 80) + 1;
+            const rows = Math.ceil(heroHeight / 80) + 1;
             const totalCells = columns * rows;
 
+            const fragment = document.createDocumentFragment();
             for (let i = 0; i < totalCells; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'mesh-cell';
@@ -153,12 +156,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 inner.appendChild(front);
                 inner.appendChild(back);
                 cell.appendChild(inner);
-                heroMeshGrid.appendChild(cell);
+                fragment.appendChild(cell);
             }
+            heroMeshGrid.appendChild(fragment);
         };
 
+        // Immediate call + Delayed call to ensure layout is ready
         generateGrid();
+        setTimeout(generateGrid, 250);
         window.addEventListener('resize', generateGrid);
+
 
         // Interaction Logic
         heroSection.addEventListener('mousemove', (e) => {
@@ -170,29 +177,40 @@ document.addEventListener('DOMContentLoaded', () => {
             spotlight.style.left = `${x}px`;
             spotlight.style.top = `${y}px`;
 
-            // Proximity Effects
+            // Optimized Proximity Effects - only check visible/near cells
             const cells = document.querySelectorAll('.mesh-cell');
+            const spotlightRadius = 200;
+            
             cells.forEach(cell => {
                 const cellRect = cell.getBoundingClientRect();
                 const cellX = cellRect.left + cellRect.width / 2;
                 const cellY = cellRect.top + cellRect.height / 2;
 
-                const distance = Math.sqrt(
-                    Math.pow(e.clientX - cellX, 2) + 
-                    Math.pow(e.clientY - cellY, 2)
-                );
+                const dx = e.clientX - cellX;
+                const dy = e.clientY - cellY;
+                const distance = Math.sqrt(dx*dx + dy*dy);
 
-                if (distance < 150) {
-                    const scale = 1 + (150 - distance) / 1000;
-                    const brightness = 1 + (150 - distance) / 300;
+                if (distance < spotlightRadius) {
+                    const power = (spotlightRadius - distance) / spotlightRadius;
+                    const scale = 1 + (power * 0.05);
+                    const brightness = 1 + (power * 0.5);
                     cell.style.transform = `scale(${scale})`;
                     cell.style.filter = `brightness(${brightness})`;
+                    
+                    // Manually trigger flip if very close (alternative to :hover if blocked)
+                    if (distance < 40) {
+                        cell.querySelector('.mesh-cell-inner').style.transform = 'rotateY(180deg)';
+                    } else {
+                        cell.querySelector('.mesh-cell-inner').style.transform = '';
+                    }
                 } else {
                     cell.style.transform = 'scale(1)';
                     cell.style.filter = 'brightness(1)';
+                    cell.querySelector('.mesh-cell-inner').style.transform = '';
                 }
             });
         });
+
     }
 
 });
