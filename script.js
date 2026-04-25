@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submit-btn');
 
     // Google Apps Script Web App URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxIrxhWBiwy3pj6JpnoNBx9o5xOJ8Ryy-xzykc66Y58zbEHB0hufqtlRT7PkA5HS_0jqA/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwPRmlKdut-0_E-kGlc6W0cDMHT-COAy9ki_6xlcLLrm5xqfGhoAZsdd1RTr75NUuoniA/exec';
 
     if(modal && closeBtn) {
         openBtns.forEach(btn => {
