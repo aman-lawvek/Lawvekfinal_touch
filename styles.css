@@ -202,19 +202,23 @@ h1, h2, h3, h4, h5 {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, 80px);
     grid-template-rows: repeat(auto-fill, 80px);
-    pointer-events: none; /* Mouse events handled by parent container */
-    mask-image: radial-gradient(circle at center, black 40%, transparent 95%);
-    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 95%);
-    overflow: hidden;
-    animation: breatheMesh 8s infinite alternate ease-in-out;
+    width: 100%;
+    height: 100%;
+    animation: breatheMesh 10s infinite alternate ease-in-out;
+    opacity: 0.8;
 }
 
 @keyframes breatheMesh {
-    0% { opacity: 0.5; transform: scale(1); }
-    100% { opacity: 1; transform: scale(1.03); }
+    0% { transform: scale(1); opacity: 0.4; }
+    100% { transform: scale(1.04); opacity: 0.8; }
 }
 
 .hero-spotlight {
@@ -222,13 +226,12 @@ h1, h2, h3, h4, h5 {
     top: 0; left: 0;
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, rgba(247, 106, 12, 0.2) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(247, 106, 12, 0.25) 0%, transparent 70%);
     pointer-events: none;
-    z-index: 1;
+    z-index: 5;
     transform: translate(-50%, -50%);
     border-radius: 50%;
     mix-blend-mode: screen;
-    transition: left 0.1s ease-out, top 0.1s ease-out; /* Smooth follow */
 }
 @keyframes breatheMesh {
     0% { opacity: 0.3; transform: scale(1); }

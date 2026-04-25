@@ -126,23 +126,25 @@ document.addEventListener('DOMContentLoaded', () => {
             'Penalty', 'Control', 'Accountability', 'Verification'
         ];
 
-        // Create spotlight element
+        // Clear and setup containers
+        heroMeshGrid.innerHTML = '';
+        const gridContainer = document.createElement('div');
+        gridContainer.className = 'grid-container';
+        heroMeshGrid.appendChild(gridContainer);
+
         const spotlight = document.createElement('div');
         spotlight.className = 'hero-spotlight';
         heroMeshGrid.appendChild(spotlight);
 
         let cells = [];
 
-        // Fill grid with cells
         const updateGrid = () => {
-            // Remove existing cells
-            heroMeshGrid.querySelectorAll('.mesh-cell').forEach(c => c.remove());
+            gridContainer.innerHTML = '';
             cells = [];
             
             const cellSize = 80;
             const viewportWidth = window.innerWidth;
-            // Use the larger of offsetHeight or a safe minimum to ensure full coverage
-            const sectionHeight = Math.max(heroSection.offsetHeight, 900); 
+            const sectionHeight = Math.max(heroSection.offsetHeight, 1000); 
             
             const cols = Math.ceil(viewportWidth / cellSize);
             const rows = Math.ceil(sectionHeight / cellSize);
@@ -170,27 +172,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 fragment.appendChild(cell);
                 cells.push(cell);
             }
-            heroMeshGrid.appendChild(fragment);
+            gridContainer.appendChild(fragment);
         };
 
-        // Initial build with a small delay to ensure section height is rendered
-        setTimeout(updateGrid, 100);
+        // Initial build
+        updateGrid();
+        // Retry once after a short delay to catch late layout shifts
+        setTimeout(updateGrid, 500);
         
         window.addEventListener('resize', updateGrid);
 
-        // Interaction logic on the entire hero section
+        // Interaction logic
         heroSection.addEventListener('mousemove', (e) => {
             const rect = heroMeshGrid.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
 
-            // Move spotlight smoothly
             spotlight.style.left = `${x}px`;
             spotlight.style.top = `${y}px`;
 
-            // Proximity & Flip logic
-            const range = 180;
-            const flipRange = 40; // Tightened for precision
+            const range = 200;
+            const flipRange = 60;
 
             cells.forEach(cell => {
                 const cellRect = cell.getBoundingClientRect();
@@ -199,14 +201,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const dist = Math.hypot(e.clientX - cellX, e.clientY - cellY);
                 
-                // Scale/Brightness Proximity
                 if (dist < range) {
                     cell.classList.add('nearby');
                 } else {
                     cell.classList.remove('nearby');
                 }
 
-                // Precision Flip
                 if (dist < flipRange) {
                     cell.classList.add('flipped');
                 } else {
@@ -215,7 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Clear effects when cursor leaves hero
         heroSection.addEventListener('mouseleave', () => {
             cells.forEach(cell => {
                 cell.classList.remove('nearby');
