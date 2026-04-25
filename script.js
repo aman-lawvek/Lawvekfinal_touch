@@ -159,11 +159,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 6. Interactive 3D Flip Grid & Spotlight
     const heroMeshGrid = document.querySelector('.hero-mesh');
-    const heroSection = document.querySelector('.hero');
+    const heroSectionMesh = document.querySelector('.hero');
     
-    if (heroMeshGrid && heroSection) {
+    if (heroMeshGrid && heroSectionMesh) {
         const terms = [
-            'Audits', 'IP Rights', 'Compliance', 'Obligation Management', 
+            'Audit', 'IP Rights', 'Compliance', 'Obligation Management', 
             'Security', 'Risk', 'SLA', 'Contracts', 'Policies', 'Privacy', 
             'GDPR', 'SOC2', 'ISO 27001', 'Governance', 'Liability', 'Renewal',
             'Penalty', 'Control', 'Accountability', 'Verification'
@@ -184,59 +184,121 @@ document.addEventListener('DOMContentLoaded', () => {
             gridContainer.innerHTML = '';
             cells = [];
             
-            const cols = Math.ceil(window.innerWidth / 80);
-            const rows = Math.ceil(window.innerHeight / 80);
-            const totalCells = cols * rows;
+            const cellSize = 80;
+            const w = window.innerWidth;
+            const h = Math.max(heroSectionMesh.offsetHeight, 800);
+            
+            const cols = Math.ceil(w / cellSize);
+            const rows = Math.ceil(h / cellSize);
 
-            for (let i = 0; i < totalCells; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'mesh-cell';
-                
-                const inner = document.createElement('div');
-                inner.className = 'cell-inner';
-                
-                const front = document.createElement('div');
-                front.className = 'cell-front';
-                
-                const back = document.createElement('div');
-                back.className = 'cell-back';
-                back.innerText = terms[Math.floor(Math.random() * terms.length)];
-                
-                inner.appendChild(front);
-                inner.appendChild(back);
-                cell.appendChild(inner);
-                gridContainer.appendChild(cell);
-                cells.push(cell);
+            const fragment = document.createDocumentFragment();
+            for (let r = 0; r < rows; r++) {
+                const rowArray = [];
+                for (let c = 0; c < cols; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'mesh-cell';
+                    
+                    const inner = document.createElement('div');
+                    inner.className = 'cell-inner';
+                    
+                    const front = document.createElement('div');
+                    front.className = 'cell-front';
+                    if (Math.random() > 0.6) {
+                        front.innerText = terms[Math.floor(Math.random() * terms.length)];
+                    }
+
+                    const back = document.createElement('div');
+                    back.className = 'cell-back';
+                    back.innerText = terms[Math.floor(Math.random() * terms.length)];
+                    
+                    inner.appendChild(front);
+                    inner.appendChild(back);
+                    cell.appendChild(inner);
+                    fragment.appendChild(cell);
+                    rowArray.push({ element: cell, inner: inner, col: c, row: r });
+                }
+                cells.push(rowArray);
             }
+            gridContainer.appendChild(fragment);
         };
 
         updateGrid();
-        window.addEventListener('resize', updateGrid);
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(updateGrid, 200);
+        });
 
-        heroSection.addEventListener('mousemove', (e) => {
-            // Update Spotlight
-            const rect = heroSection.getBoundingClientRect();
+        // Mouse tracking for spotlight and cell flipping
+        heroSectionMesh.addEventListener('mousemove', (e) => {
+            const rect = heroSectionMesh.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            spotlight.style.left = `${x}px`;
-            spotlight.style.top = `${y}px`;
+            
+            spotlight.style.left = x + 'px';
+            spotlight.style.top = y + 'px';
 
-            // Randomly flip nearby cells
-            cells.forEach(cell => {
-                const cellRect = cell.getBoundingClientRect();
-                const cellX = cellRect.left + cellRect.width / 2;
-                const cellY = cellRect.top + cellRect.height / 2;
-                
-                const dist = Math.hypot(x - cellX, y - cellY);
-                if (dist < 120 && Math.random() > 0.8) {
-                    cell.classList.add('flipped');
-                    setTimeout(() => cell.classList.remove('flipped'), 2000);
+            const cellSize = 80;
+            const mouseCol = Math.floor(x / cellSize);
+            const mouseRow = Math.floor(y / cellSize);
+            const flipRadius = 2;
+
+            for (let r = 0; r < cells.length; r++) {
+                for (let c = 0; c < cells[r].length; c++) {
+                    const cellObj = cells[r][c];
+                    const dist = Math.sqrt(Math.pow(c - mouseCol, 2) + Math.pow(r - mouseRow, 2));
+                    
+                    if (dist < flipRadius) {
+                        cellObj.element.classList.add('flipped');
+                        cellObj.element.classList.add('nearby');
+                    } else {
+                        cellObj.element.classList.remove('flipped');
+                        cellObj.element.classList.remove('nearby');
+                    }
                 }
-            });
+            }
         });
+
+        heroSectionMesh.addEventListener('mouseleave', () => {
+            for (let r = 0; r < cells.length; r++) {
+                for (let c = 0; c < cells[r].length; c++) {
+                    cells[r][c].element.classList.remove('flipped');
+                    cells[r][c].element.classList.remove('nearby');
+                }
+            }
+        });
+
+        // Subtle ambient animation
+        let time = 0;
+        const animate = () => {
+            time += 0.003;
+            
+            for (let r = 0; r < cells.length; r++) {
+                for (let c = 0; c < cells[r].length; c++) {
+                    const cellObj = cells[r][c];
+                    if (cellObj.element.classList.contains('flipped')) continue;
+                    
+                    const inner = cellObj.inner;
+                    const dx = c - (cells[r].length / 2);
+                    const dy = r - (cells.length / 2);
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const angle = Math.atan2(dy, dx);
+                    
+                    const phase = dist * 0.25 - time + angle * 0.5;
+                    const z = Math.sin(phase) * 30 - 40;
+                    const rotX = Math.cos(phase * 0.8) * 10;
+                    const rotY = Math.sin(phase * 0.8) * 10;
+                    
+                    inner.style.transform = `perspective(1500px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${z}px)`;
+                    
+                    const op = 0.5 + Math.sin(phase) * 0.35;
+                    cellObj.element.style.opacity = Math.max(0, op);
+                }
+            }
+            requestAnimationFrame(animate);
+        };
+
+        requestAnimationFrame(animate);
     }
 });
 
-// Deploy Trigger: Sat Apr 25 14:20:11 IST 2026
-
-// Final Deploy Trigger: Sat Apr 25 15:12:34 IST 2026
