@@ -184,21 +184,44 @@ document.addEventListener('DOMContentLoaded', () => {
             spotlight.style.left = `${x}px`;
             spotlight.style.top = `${y}px`;
 
+            // Identify Exclusion Zones (CTAs)
+            const ctas = document.querySelectorAll('.hero .btn-primary, .hero .hero-badge');
+            const exclusionZones = Array.from(ctas).map(cta => cta.getBoundingClientRect());
+
             const range = 200;
-            const flipRange = 35; // Tightened for one-at-a-time effect
+            const flipRange = 40;
 
             for (let i = 0; i < cells.length; i++) {
                 const cell = cells[i];
                 const cRect = cell.getBoundingClientRect();
+                
+                // Check if cell is under any CTA
+                const isExcluded = exclusionZones.some(zone => {
+                    return !(cRect.right < zone.left || 
+                             cRect.left > zone.right || 
+                             cRect.bottom < zone.top || 
+                             cRect.top > zone.bottom);
+                });
+
+                if (isExcluded) {
+                    cell.classList.remove('nearby', 'flipped');
+                    cell.style.transform = 'none';
+                    continue;
+                }
+
                 const cX = cRect.left + cRect.width / 2;
                 const cY = cRect.top + cRect.height / 2;
-                
                 const dist = Math.hypot(e.clientX - cX, e.clientY - cY);
                 
+                // 7D Depth Tilt Effect
                 if (dist < range) {
                     cell.classList.add('nearby');
+                    const tiltX = (cY - e.clientY) / 10;
+                    const tiltY = (e.clientX - cX) / 10;
+                    cell.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.05)`;
                 } else {
                     cell.classList.remove('nearby');
+                    cell.style.transform = 'none';
                 }
 
                 if (dist < flipRange) {

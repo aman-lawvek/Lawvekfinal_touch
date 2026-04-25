@@ -271,7 +271,12 @@ h1, h2, h3, h4, h5 {
     cursor: default;
     border: 0.5px solid rgba(15, 23, 42, 0.05);
     box-sizing: border-box;
-    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); /* Smoother */
+    transition: transform 0.1s ease-out, border-color 0.4s ease; /* Fast tilt, smooth border */
+    transform-style: preserve-3d;
+}
+
+.mesh-cell.nearby {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
 .cell-inner {
