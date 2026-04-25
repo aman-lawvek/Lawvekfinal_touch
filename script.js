@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.addEventListener('scroll', revealOnScroll);
-    revealOnScroll(); // Trigger once on load
+    revealOnScroll();
 
     // 2. Navbar glass effect on scroll
     const navbar = document.getElementById('navbar');
@@ -34,22 +34,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Remove active class from all
             tabBtns.forEach(b => b.classList.remove('active'));
             tabPanes.forEach(p => {
                 p.classList.remove('active');
-                // Brief timeout to re-trigger animations if needed
                 setTimeout(() => p.style.display = 'none', 300);
             });
 
-            // Add active class to clicked
             btn.classList.add('active');
             const targetId = btn.getAttribute('data-target');
             const targetPane = document.getElementById(targetId);
-            
+
             setTimeout(() => {
                 targetPane.style.display = 'block';
-                // Trigger reflow
                 void targetPane.offsetWidth;
                 targetPane.classList.add('active');
             }, 300);
@@ -57,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 4. Cursor parallax for hero dashboard
-    const heroDashboard = document.querySelector('.dashboard-mockup');
+    const heroDashboard = document.querySelector('.hero-dashboard-preview');
     const heroSection = document.querySelector('.hero');
 
     if(heroDashboard && heroSection) {
@@ -65,10 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const xAxis = (window.innerWidth / 2 - e.pageX) / 50;
             const yAxis = (window.innerHeight / 2 - e.pageY) / 50;
             heroDashboard.style.transform = `perspective(1000px) rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
-        });
-
-        heroSection.addEventListener('mouseenter', () => {
-            heroDashboard.style.transition = 'none';
         });
 
         heroSection.addEventListener('mouseleave', () => {
@@ -82,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const openBtns = document.querySelectorAll('.open-demo-modal');
     const closeBtn = document.getElementById('close-demo-modal');
     const bookingForm = document.getElementById('booking-form');
-    const formStatus = document.getElementById('form-status');
     const submitBtn = document.getElementById('submit-btn');
 
     // IMPORTANT: Replace this with your Google Apps Script Web App URL
@@ -93,11 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
-            // Clear status when opening
-            if(formStatus) {
-                formStatus.style.display = 'none';
-                formStatus.className = 'form-status';
-            }
         };
 
         const closeModal = () => {
@@ -110,132 +96,67 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
 
-        // Form Submission to Google Sheets
         if(bookingForm) {
             bookingForm.addEventListener('submit', e => {
                 e.preventDefault();
-                
-                // Visual feedback
                 submitBtn.disabled = true;
-                const btnText = submitBtn.querySelector('span');
-                const originalText = btnText.innerText;
-                btnText.innerText = 'Processing...';
+                const originalText = submitBtn.innerText;
+                submitBtn.innerText = 'Processing...';
 
                 const formData = new FormData(bookingForm);
-                
                 fetch(scriptURL, { method: 'POST', body: formData })
                     .then(response => {
-                        formStatus.innerText = 'Success! Your demo is booked.';
-                        formStatus.className = 'form-status success';
+                        alert('Success! Your demo is booked.');
                         bookingForm.reset();
                         submitBtn.disabled = false;
-                        btnText.innerText = originalText;
-                        
-                        // Close modal after delay
-                        setTimeout(closeModal, 2500);
+                        submitBtn.innerText = originalText;
+                        closeModal();
                     })
                     .catch(error => {
                         console.error('Error!', error.message);
-                        formStatus.innerText = 'Something went wrong. Please try again.';
-                        formStatus.className = 'form-status error';
+                        alert('Something went wrong. Please try again.');
                         submitBtn.disabled = false;
-                        btnText.innerText = originalText;
+                        submitBtn.innerText = originalText;
                     });
             });
         }
     }
 
-    // 6. Interactive 3D Flip Grid & Spotlight
+    // 6. Random Static Hero Grid Overlay (Matches Vercel)
     const heroMeshGrid = document.querySelector('.hero-mesh');
-    
-        const terms = [
-            'Audit', 'IP Rights', 'Missed Obligation', 'Compliance', 'Security', 
-            'GDPR', 'SOC2', 'ISO 27001', 'Governance', 'Liability', 'Renewal', 
-            'Penalty', 'Control', 'Tracking', 'Evidence', 'Risk', 'Policy', 
-            'Access Control', 'Data Privacy', 'Verification'
-        ];
+    if (heroMeshGrid) {
+        const terms = ['Audit', 'Liability', 'Termination', 'SLA Breach', 'Renewal', 'IP Rights', 'Penalty', 'Payment', 'Risk', 'Control'];
+        const shuffledTerms = terms.sort(() => 0.5 - Math.random()).slice(0, 7);
+        const safeCols = [-8, -7, -6, 6, 7, 8];
+        const chosenCoords = [];
 
-        heroMeshGrid.innerHTML = '';
-        const gridContainer = document.createElement('div');
-        gridContainer.className = 'grid-container';
-        heroMeshGrid.appendChild(gridContainer);
+        shuffledTerms.forEach(term => {
+            let col, row;
+            let attempts = 0;
+            let isValid = false;
 
-        let cells = [];
-
-        const updateGrid = () => {
-            gridContainer.innerHTML = '';
-            cells = [];
-            
-            const cellSize = 80;
-            const w = window.innerWidth;
-            const h = Math.max(heroSection.offsetHeight, 1000);
-            
-            const cols = Math.ceil(w / cellSize);
-            const rows = Math.ceil(h / cellSize);
-
-            const fragment = document.createDocumentFragment();
-            for (let r = 0; r < rows; r++) {
-                const rowArray = [];
-                for (let c = 0; c < cols; c++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'mesh-cell';
-                    
-                    const inner = document.createElement('div');
-                    inner.className = 'cell-inner';
-                    
-                    const front = document.createElement('div');
-                    front.className = 'cell-front';
-                    // Show keyword on front, only for a subset of cells to avoid clutter
-                    if (Math.random() > 0.6) {
-                        front.innerText = terms[Math.floor(Math.random() * terms.length)];
+            do {
+                col = safeCols[Math.floor(Math.random() * safeCols.length)];
+                row = Math.floor(Math.random() * 5) + 1;
+                isValid = true;
+                for (const existing of chosenCoords) {
+                    if (Math.abs(existing.col - col) <= 1 && Math.abs(existing.row - row) <= 1) {
+                        isValid = false;
+                        break;
                     }
-                    
-                    inner.appendChild(front);
-                    cell.appendChild(inner);
-                    fragment.appendChild(cell);
-                    rowArray.push({ element: cell, inner: inner });
                 }
-                cells.push(rowArray);
+                attempts++;
+            } while (!isValid && attempts < 100);
+
+            if (isValid) {
+                chosenCoords.push({ col, row });
+                const cell = document.createElement('div');
+                cell.className = 'mesh-cell';
+                cell.style.left = `calc(50% - 40px + ${col * 80}px)`;
+                cell.style.top = `${row * 80}px`;
+                cell.innerText = term;
+                heroMeshGrid.appendChild(cell);
             }
-            gridContainer.appendChild(fragment);
-        };
-
-        updateGrid();
-        window.addEventListener('resize', updateGrid);
-        window.addEventListener('load', updateGrid);
-
-        let time = 0;
-        const animate = () => {
-            time += 0.003; // Even slower for "natural" galaxy feel
-            
-            for (let r = 0; r < cells.length; r++) {
-                for (let c = 0; c < cells[r].length; c++) {
-                    const cellObj = cells[r][c];
-                    const inner = cellObj.inner;
-                    
-                    const dx = c - (cells[r].length / 2);
-                    const dy = r - (cells.length / 2);
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    const angle = Math.atan2(dy, dx);
-                    
-                    // Complex helical/galaxy wave
-                    const phase = dist * 0.25 - time + angle * 0.5;
-                    
-                    // Deeper Z-motion
-                    const z = Math.sin(phase) * 60 - 80; // Moves deeper into screen
-                    const rotX = Math.cos(phase * 0.8) * 20;
-                    const rotY = Math.sin(phase * 0.8) * 20;
-                    
-                    inner.style.transform = `perspective(1500px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${z}px)`;
-                    
-                    // Galaxy-like fading (natural and lively)
-                    const op = 0.5 + Math.sin(phase) * 0.35;
-                    cellObj.element.style.opacity = Math.max(0, op);
-                }
-            }
-            requestAnimationFrame(animate);
-        };
-
-        requestAnimationFrame(animate);
+        });
     }
 });
