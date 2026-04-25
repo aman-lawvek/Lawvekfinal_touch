@@ -119,10 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (heroMeshGrid && heroSection) {
         const terms = [
-            'Audits', 'IP Rights', 'Compliance', 'Obligation Management', 
-            'Security', 'Risk', 'SLA', 'Contracts', 'Policies', 'Privacy', 
-            'GDPR', 'SOC2', 'ISO 27001', 'Governance', 'Liability', 'Renewal',
-            'Penalty', 'Control', 'Accountability', 'Verification'
+            'Audits', 'IP Rights', 'Compliance', 'Security', 'Risk', 'SLA', 
+            'Contracts', 'Policies', 'Privacy', 'GDPR', 'SOC2', 'ISO 27001', 
+            'Governance', 'Liability', 'Renewal', 'Penalty', 'Control', 
+            'Tracking', 'Evidence', 'Audit-Ready'
         ];
 
         heroMeshGrid.innerHTML = '';
@@ -184,8 +184,8 @@ document.addEventListener('DOMContentLoaded', () => {
             spotlight.style.left = `${x}px`;
             spotlight.style.top = `${y}px`;
 
-            const range = 220;
-            const flipRange = 65;
+            const range = 200;
+            const flipRange = 35; // Tightened for one-at-a-time effect
 
             for (let i = 0; i < cells.length; i++) {
                 const cell = cells[i];
