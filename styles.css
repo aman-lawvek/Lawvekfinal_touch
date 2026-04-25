@@ -229,18 +229,7 @@ h1, h2, h3, h4, h5 {
     100% { opacity: 0.7; transform: scale(1.02); }
 }
 
-.hero-spotlight {
-    position: absolute;
-    top: 0; left: 0;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(247, 106, 12, 0.15) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 5;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    mix-blend-mode: screen;
-}
+
 
 @keyframes breatheMesh {
     0% { transform: scale(1); opacity: 0.4; }

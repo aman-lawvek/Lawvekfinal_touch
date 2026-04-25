@@ -130,15 +130,11 @@ document.addEventListener('DOMContentLoaded', () => {
         gridContainer.className = 'grid-container';
         heroMeshGrid.appendChild(gridContainer);
 
-        const spotlight = document.createElement('div');
-        spotlight.className = 'hero-spotlight';
-        heroMeshGrid.appendChild(spotlight);
-
         let cells = [];
 
         const updateGrid = () => {
             gridContainer.innerHTML = '';
-            cells = []; // This will now be a 2D array for fast lookup
+            cells = [];
             
             const cellSize = 80;
             const w = window.innerWidth;
@@ -160,12 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const front = document.createElement('div');
                     front.className = 'cell-front';
                     
-                    const back = document.createElement('div');
-                    back.className = 'cell-back';
-                    back.innerText = terms[Math.floor(Math.random() * terms.length)];
-                    
                     inner.appendChild(front);
-                    inner.appendChild(back);
                     cell.appendChild(inner);
                     fragment.appendChild(cell);
                     rowArray.push({ element: cell, inner: inner });
@@ -181,75 +172,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let time = 0;
         const animate = () => {
-            time += 0.005; // Slo-mo speed
+            time += 0.005;
             
             for (let r = 0; r < cells.length; r++) {
                 for (let c = 0; c < cells[r].length; c++) {
                     const cellObj = cells[r][c];
-                    const cell = cellObj.element;
                     const inner = cellObj.inner;
                     
-                    // Helical Wave Math
                     const dx = c - (cells[r].length / 2);
                     const dy = r - (cells.length / 2);
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     const angle = Math.atan2(dy, dx);
                     
-                    // Create helical phase shift
                     const phase = dist * 0.3 - time + angle;
                     
-                    // 3D Displacement
-                    const z = Math.sin(phase) * 30 - 20; // Pulsates into the screen
+                    const z = Math.sin(phase) * 30 - 20;
                     const rotX = Math.cos(phase) * 15;
                     const rotY = Math.sin(phase) * 15;
                     
-                    // Apply slomo helical transform
-                    // If the cell is flipped (hover), we add 180 to Y
-                    const isFlipped = cell.classList.contains('flipped');
-                    const baseRotY = isFlipped ? 180 : 0;
-                    
-                    inner.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${baseRotY + rotY}deg) translateZ(${z}px)`;
-                    
-                    // Subtle opacity shift for "lively" effect
-                    cell.style.opacity = 0.7 + Math.sin(phase) * 0.2;
+                    inner.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${z}px)`;
+                    cellObj.element.style.opacity = 0.7 + Math.sin(phase) * 0.2;
                 }
             }
             requestAnimationFrame(animate);
         };
 
         requestAnimationFrame(animate);
-
-        // Keep simple hover flip interaction
-        heroSection.addEventListener('mousemove', (e) => {
-            const rect = heroMeshGrid.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-
-            spotlight.style.left = `${mouseX}px`;
-            spotlight.style.top = `${mouseY}px`;
-
-            const cellSize = 80;
-            const col = Math.floor(mouseX / cellSize);
-            const row = Math.floor(mouseY / cellSize);
-
-            // Reset all flips and set only current
-            for (let r = 0; r < cells.length; r++) {
-                for (let c = 0; c < cells[r].length; c++) {
-                    if (r === row && c === col) {
-                        cells[r][c].element.classList.add('flipped');
-                    } else {
-                        cells[r][c].element.classList.remove('flipped');
-                    }
-                }
-            }
-        });
-
-        heroSection.addEventListener('mouseleave', () => {
-            for (let r = 0; r < cells.length; r++) {
-                for (let c = 0; c < cells[r].length; c++) {
-                    cells[r][c].element.classList.remove('flipped');
-                }
-            }
-        });
     }
 });
