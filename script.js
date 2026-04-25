@@ -115,8 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 6. Interactive 3D Flip Grid & Spotlight
+    const heroSection = document.querySelector('.hero');
     const heroMeshGrid = document.querySelector('.hero-mesh');
-    if (heroMeshGrid) {
+    
+    if (heroMeshGrid && heroSection) {
         const terms = [
             'Audits', 'IP Rights', 'Compliance', 'Obligation Management', 
             'Security', 'Risk', 'SLA', 'Contracts', 'Policies', 'Privacy', 
@@ -129,13 +131,16 @@ document.addEventListener('DOMContentLoaded', () => {
         spotlight.className = 'hero-spotlight';
         heroMeshGrid.appendChild(spotlight);
 
+        let cells = [];
+
         // Fill grid with cells
         const updateGrid = () => {
             heroMeshGrid.querySelectorAll('.mesh-cell').forEach(c => c.remove());
+            cells = [];
             
             const cellSize = 80;
             const cols = Math.ceil(window.innerWidth / cellSize) + 2;
-            const rows = Math.ceil(window.innerHeight / cellSize) + 2;
+            const rows = Math.ceil(heroSection.offsetHeight / cellSize) + 2;
             const totalCells = cols * rows;
 
             for (let i = 0; i < totalCells; i++) {
@@ -156,38 +161,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 inner.appendChild(back);
                 cell.appendChild(inner);
                 heroMeshGrid.appendChild(cell);
+                cells.push(cell);
             }
         };
 
         updateGrid();
         window.addEventListener('resize', updateGrid);
 
-        // Interaction logic
-        const cells = heroMeshGrid.getElementsByClassName('mesh-cell');
-        
-        window.addEventListener('mousemove', (e) => {
+        // Interaction logic on the entire hero section
+        heroSection.addEventListener('mousemove', (e) => {
             const rect = heroMeshGrid.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
 
-            // Move spotlight
+            // Move spotlight smoothly
             spotlight.style.left = `${x}px`;
             spotlight.style.top = `${y}px`;
 
-            // Proximity effect
-            const range = 150;
-            Array.from(cells).forEach(cell => {
+            // Proximity & Flip logic
+            const range = 180;
+            const flipRange = 50;
+
+            cells.forEach(cell => {
                 const cellRect = cell.getBoundingClientRect();
                 const cellX = cellRect.left + cellRect.width / 2;
                 const cellY = cellRect.top + cellRect.height / 2;
                 
                 const dist = Math.hypot(e.clientX - cellX, e.clientY - cellY);
                 
+                // Scale/Brightness Proximity
                 if (dist < range) {
                     cell.classList.add('nearby');
                 } else {
                     cell.classList.remove('nearby');
                 }
+
+                // Precision Flip
+                if (dist < flipRange) {
+                    cell.classList.add('flipped');
+                } else {
+                    cell.classList.remove('flipped');
+                }
+            });
+        });
+
+        // Clear effects when cursor leaves hero
+        heroSection.addEventListener('mouseleave', () => {
+            cells.forEach(cell => {
+                cell.classList.remove('nearby');
+                cell.classList.remove('flipped');
             });
         });
     }
