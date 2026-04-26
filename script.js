@@ -348,4 +348,15 @@ document.addEventListener('DOMContentLoaded', () => {
             targetX = -1000; targetY = -1000; // Move spotlight away
         });
     }
+    // 5. Mobile Menu Toggle
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+    
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenuBtn.classList.toggle('active');
+            // For a full mobile menu, you'd toggle a class on navLinks or a separate overlay
+            console.log('Mobile menu toggled');
+        });
+    }
 });
