@@ -348,15 +348,47 @@ document.addEventListener('DOMContentLoaded', () => {
             targetX = -1000; targetY = -1000; // Move spotlight away
         });
     }
-    // 5. Mobile Menu Toggle
-    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-    const navLinks = document.querySelector('.nav-links');
-    
-    if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenuBtn.classList.toggle('active');
-            // For a full mobile menu, you'd toggle a class on navLinks or a separate overlay
-            console.log('Mobile menu toggled');
-        });
-    }
+    // 6. Live Dashboard Animation Sequence
+    const setupDashboardAnimation = () => {
+        const views = ['upload', 'contracts', 'extracting', 'obligations', 'tasks'];
+        const breadcrumbs = {
+            'upload': 'Lawvek / <b>Intake & AI Scan</b>',
+            'extracting': 'Lawvek / <b>AI Obligation Extraction</b>',
+            'contracts': 'Lawvek / <b>Contracts Registry</b>',
+            'obligations': 'Lawvek / <b>Obligations Hub</b>',
+            'tasks': 'Lawvek / <b>Action Registry</b>'
+        };
+        let currentIndex = 0;
+
+        const cycleView = () => {
+            const nextIndex = (currentIndex + 1) % views.length;
+            const nextView = views[nextIndex];
+            
+            // Update Sidebar
+            document.querySelectorAll('.sidebar-menu .menu-item').forEach(item => {
+                // Determine which sidebar item to highlight
+                let sidebarTarget = nextView;
+                if (nextView === 'upload') sidebarTarget = 'contracts';
+                if (nextView === 'extracting') sidebarTarget = 'obligations';
+                
+                item.classList.toggle('active', item.dataset.view === sidebarTarget);
+            });
+
+            // Update Breadcrumbs
+            const breadcrumbEl = document.getElementById('app-breadcrumbs');
+            if (breadcrumbEl) breadcrumbEl.innerHTML = breadcrumbs[nextView];
+
+            // Update View
+            document.querySelectorAll('.app-view').forEach(view => {
+                view.classList.toggle('active', view.id === `view-${nextView}`);
+            });
+
+            currentIndex = nextIndex;
+        };
+
+        // Run every 2.2 seconds (High-performance AI feel)
+        setInterval(cycleView, 2200);
+    };
+
+    setupDashboardAnimation();
 });

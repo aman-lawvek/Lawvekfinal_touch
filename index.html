@@ -63,14 +63,30 @@
                     <!-- Left Sidebar -->
                     <div class="app-sidebar">
                         <div class="sidebar-logo">
-                            <svg width="20" height="20" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#F76A0C"/><path d="M12 22V10L20 16L12 22Z" fill="white"/></svg>
-                            Lawvek
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L3 7V17L12 22L21 17V7L12 2Z" stroke="#F76A0C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 22V12L21 7" stroke="#F76A0C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 12L3 7" stroke="#F76A0C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span style="letter-spacing: -0.02em;">Lawvek</span>
                         </div>
-                        <div class="sidebar-menu">
-                            <div class="menu-item"><span class="icon">▤</span> Contracts</div>
-                            <div class="menu-item active"><span class="icon">✓</span> Obligations</div>
-                            <div class="menu-item"><span class="icon">⋮</span> My tasks</div>
-                            <div class="menu-item"><span class="icon">⚡</span> Integrations</div>
+                        <div class="sidebar-menu" id="sidebar-menu">
+                            <div class="menu-item active" data-view="contracts">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                                Contracts
+                            </div>
+                            <div class="menu-item" data-view="obligations">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                Obligations
+                            </div>
+                            <div class="menu-item" data-view="tasks">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                                Actions
+                            </div>
+                            <div class="menu-item">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                                Integrations
+                            </div>
                         </div>
                         <div class="sidebar-bottom">
                             <div class="user-profile">
@@ -79,52 +95,204 @@
                                     <div class="name">Sarah J.</div>
                                     <div class="role">Admin</div>
                                 </div>
+                                <div class="profile-action">⚙</div>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Main App Content Space -->
-                    <div class="app-main">
+                    <div class="app-main" id="app-viewport">
                         <!-- Top header -->
                         <div class="app-topbar">
-                            <div class="breadcrumbs">Lawvek / <b>Obligations Hub</b></div>
+                            <div class="breadcrumbs" id="app-breadcrumbs">Lawvek / <b>Contracts Registry</b></div>
+                            <div class="topbar-search">
+                                <span class="search-icon">🔍</span>
+                                <input type="text" placeholder="Search across all records..." readonly>
+                            </div>
                             <div class="topbar-actions">
                                 <div class="badge-active"><span class="pulse-dot"></span> Live Sync</div>
                             </div>
                         </div>
 
-                        <!-- Data Table UI -->
-                        <div class="mock-data-table">
-                            <div class="mdt-header">
-                                <div class="mdt-col" style="flex: 2;">Obligation</div>
-                                <div class="mdt-col" style="flex: 1.5;">Counterparty</div>
-                                <div class="mdt-col" style="flex: 1;">Effective Date</div>
-                                <div class="mdt-col" style="flex: 1.2;">Tagged Teams</div>
-                                <div class="mdt-col" style="flex: 1;">Actions</div>
+                        <div class="app-view-container">
+                            <!-- VIEW 0: UPLOAD -->
+                            <div class="app-view active" id="view-upload">
+                                <div class="futuristic-upload">
+                                    <div class="scanner-ring"></div>
+                                    <div class="upload-box">
+                                        <div class="ai-icon-svg">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="#F76A0C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                        </div>
+                                        <h4>Upload Master Services Agreement</h4>
+                                        <p>Lawvek AI is ready to abstract obligations</p>
+                                        <div class="scanning-bar"><div class="bar-fill"></div></div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mdt-row">
-                                <div class="mdt-cell d-col" style="flex: 2;"><div class="skel-line w-80"></div><div class="skel-line w-50 mt-1"></div></div>
-                                <div class="mdt-cell" style="flex: 1.5;"><div class="skel-line w-60"></div></div>
-                                <div class="mdt-cell" style="flex: 1;"><div class="skel-line w-75"></div></div>
-                                <div class="mdt-cell" style="flex: 1.2;"><div class="skel-line w-60"></div></div>
-                                <div class="mdt-cell" style="flex: 1;"><div class="skel-line red w-80"></div></div>
+
+                            <!-- VIEW 0.5: EXTRACTING -->
+                            <div class="app-view" id="view-extracting">
+                                <div class="extraction-animation">
+                                    <div class="doc-preview">
+                                        <div class="doc-line"></div><div class="doc-line"></div><div class="doc-line highlight"></div><div class="doc-line"></div>
+                                    </div>
+                                    <div class="extraction-stream">
+                                        <div class="data-fragment">SOC 2 Audit</div>
+                                        <div class="data-fragment delay-1">Net 45 Terms</div>
+                                        <div class="data-fragment delay-2">90-Day Notice</div>
+                                    </div>
+                                    <div class="extraction-status">
+                                        <div class="pulse-icon">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F76A0C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9L12 2Z"></path></svg>
+                                        </div>
+                                        <span>Extracting Obligations... <b>14 found</b></span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mdt-row">
-                                <div class="mdt-cell d-col" style="flex: 2;"><div class="skel-line w-95"></div><div class="skel-line w-40 mt-1"></div></div>
-                                <div class="mdt-cell" style="flex: 1.5;"><div class="skel-line w-80"></div></div>
-                                <div class="mdt-cell" style="flex: 1;"><div class="skel-line w-50"></div></div>
-                                <div class="mdt-cell gap-1" style="flex: 1.2;"><div class="skel-line w-50"></div><div class="skel-line w-40"></div></div>
-                                <div class="mdt-cell" style="flex: 1;"><div class="skel-line green w-60"></div></div>
+
+                            <!-- VIEW 1: CONTRACTS -->
+                            <div class="app-view" id="view-contracts">
+                                <table class="app-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 35%;">CONTRACT NAME</th>
+                                            <th>COUNTERPARTY</th>
+                                            <th>TOTAL VALUE</th>
+                                            <th>HEALTH</th>
+                                            <th>OWNER</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <svg class="table-icon" viewBox="0 0 24 24" fill="none" stroke="#8E8B86" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                                                <span class="link-blue">Acme Corp MSA</span>
+                                            </td>
+                                            <td>Acme Solutions, LLC</td>
+                                            <td>$150,000</td>
+                                            <td><span class="status-pill green">Good</span></td>
+                                            <td><div class="mini-avatar">SJ</div></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <svg class="table-icon" viewBox="0 0 24 24" fill="none" stroke="#8E8B86" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                                                <span class="link-blue">Initech Vendor Agmt</span>
+                                            </td>
+                                            <td>Initech Industries</td>
+                                            <td>$85,500</td>
+                                            <td><span class="status-pill red">1 Missed</span></td>
+                                            <td><div class="mini-avatar blue">CR</div></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <svg class="table-icon" viewBox="0 0 24 24" fill="none" stroke="#8E8B86" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                                                <span class="link-blue">Hooli Cloud SLA</span>
+                                            </td>
+                                            <td>Hooli Corp</td>
+                                            <td>$320,000</td>
+                                            <td><span class="status-pill green">Good</span></td>
+                                            <td><div class="mini-avatar purple">EL</div></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
-                            <div class="mdt-row">
-                                <div class="mdt-cell d-col" style="flex: 2;"><div class="skel-line w-70"></div></div>
-                                <div class="mdt-cell" style="flex: 1.5;"><div class="skel-line w-50"></div></div>
-                                <div class="mdt-cell" style="flex: 1;"><div class="skel-line w-85"></div></div>
-                                <div class="mdt-cell gap-1" style="flex: 1.2;"><div class="skel-line w-70"></div></div>
-                                <div class="mdt-cell" style="flex: 1;"><div class="skel-line red w-90"></div></div>
+
+                            <!-- VIEW 2: OBLIGATIONS -->
+                            <div class="app-view" id="view-obligations">
+                                <table class="app-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 40%;">OBLIGATION ABSTRACT</th>
+                                            <th>CATEGORY</th>
+                                            <th>TAGGED TEAMS</th>
+                                            <th>STATUS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="abstract">Provide initial SOC 2 Type II report within 30...</td>
+                                            <td><span class="cat-pill">Audit Rights</span></td>
+                                            <td><span class="tag-pill purple">Legal</span> <span class="tag-pill blue">Security</span></td>
+                                            <td><span class="status-pill gray">Scheduled</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="abstract">Net 45 payment with 2% discount if paid wit...</td>
+                                            <td><span class="cat-pill">Payment Terms</span></td>
+                                            <td><span class="tag-pill green">Finance</span> <span class="tag-pill orange">Procurement</span></td>
+                                            <td><span class="status-pill orange">In Process</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="abstract">90-day written notice required prior to auto-...</td>
+                                            <td><span class="cat-pill">Notice Period</span></td>
+                                            <td><span class="tag-pill purple">Legal</span></td>
+                                            <td><span class="status-pill red">Missed</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
-                        </div>
-                    </div>
+
+                            <!-- VIEW 3: ACTIONS -->
+                            <div class="app-view" id="view-tasks">
+                                <table class="app-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 35%;">REQUIRED ACTION</th>
+                                            <th>PRIORITY</th>
+                                            <th>TARGET DATE</th>
+                                            <th>STATUS</th>
+                                            <th>ACTION</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <svg class="table-icon" viewBox="0 0 24 24" fill="none" stroke="#8E8B86" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                                Draft 90-Day Notice Letter
+                                            </td>
+                                            <td><span class="priority high">High</span></td>
+                                            <td class="text-red">Today</td>
+                                            <td><span class="status-pill red">Overdue</span></td>
+                                            <td>
+                                                <button class="table-btn red">
+                                                    Draft Email 
+                                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <svg class="table-icon" viewBox="0 0 24 24" fill="none" stroke="#8E8B86" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+                                                Approve SOC2 Transmittal
+                                            </td>
+                                            <td><span class="priority med">Medium</span></td>
+                                            <td>Thu, 25th</td>
+                                            <td><span class="status-pill gray">Pending</span></td>
+                                            <td>
+                                                <button class="table-btn blue">
+                                                    Open Drive 
+                                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <svg class="table-icon" viewBox="0 0 24 24" fill="none" stroke="#8E8B86" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                                                Review SLA Credits Calc
+                                            </td>
+                                            <td><span class="priority low">Low</span></td>
+                                            <td>Fri, 26th</td>
+                                            <td><span class="status-pill orange">Processing</span></td>
+                                            <td>
+                                                <button class="table-btn">
+                                                    Review Calc 
+                                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>        </div>
                 </div>
             </div>
         </div>
@@ -262,7 +430,7 @@
             <div class="platform-interactive reveal">
                 <div class="platform-tabs">
                     <button class="tab-btn active" data-target="tab-1">AI Intelligence</button>
-                    <button class="tab-btn" data-target="tab-2">Compliance Engine</button>
+                    <button class="tab-btn" data-target="tab-2">Legal Compliance</button>
                     <button class="tab-btn" data-target="tab-3">Workflow Integration</button>
                     <button class="tab-btn" data-target="tab-4">Audit-Ready Security</button>
                 </div>
@@ -345,57 +513,58 @@
                         </div>
                     </div>
 
-                    <!-- TAB 2: Continuous Compliance Engine -->
+                    <!-- TAB 2: Legal Compliance -->
                     <div class="tab-pane" id="tab-2">
                         <div class="pane-grid">
                             <div class="pane-text">
-                                <h3>Compliance That Holds Up Beyond the Audit</h3>
-                                <p>Map frameworks and track compliance continuously—not just at audit time.</p>
+                                <h3>Global Legal Compliance Simplified</h3>
+                                <p>Automatically map and enforce regional legal frameworks across your global operations.</p>
                                 <ul class="feature-list">
-                                    <li><svg width="20" height="20" fill="none"><path d="M16 5L7.5 14L3.3 10" stroke="#F76A0C" stroke-width="2"/></svg> Maps controls across SOC 2, ISO, HIPAA, and GDPR without duplication</li>
-                                    <li><svg width="20" height="20" fill="none"><path d="M16 5L7.5 14L3.3 10" stroke="#F76A0C" stroke-width="2"/></svg> Tracks compliance drift continuously across systems and teams</li>
-                                    <li><svg width="20" height="20" fill="none"><path d="M16 5L7.5 14L3.3 10" stroke="#F76A0C" stroke-width="2"/></svg> Surfaces risks before they become audit findings</li>
+                                    <li><svg width="20" height="20" fill="none"><path d="M16 5L7.5 14L3.3 10" stroke="#F76A0C" stroke-width="2"/></svg> Covers India DPDP, EU GDPR, US CCPA, and 50+ other global standards</li>
+                                    <li><svg width="20" height="20" fill="none"><path d="M16 5L7.5 14L3.3 10" stroke="#F76A0C" stroke-width="2"/></svg> Handles multi-jurisdictional rules without manual duplication</li>
+                                    <li><svg width="20" height="20" fill="none"><path d="M16 5L7.5 14L3.3 10" stroke="#F76A0C" stroke-width="2"/></svg> Auto-updates as regional privacy and data laws evolve</li>
                                 </ul>
                             </div>
                             <div class="pane-visual">
                                 <div class="bento-visual compliance-bento">
+                                    <div class="global-badge">🌍 Global Coverage</div>
                                     <div class="framework-grid">
-                                        <!-- SOC 2 Card -->
+                                        <!-- India DPDP -->
                                         <div class="framework-card">
                                             <div class="f-head">
-                                                <div class="f-name">SOC 2 Type II</div>
-                                                <div class="f-badge green">Passing</div>
+                                                <div class="f-name">🇮🇳 India DPDP Act</div>
+                                                <div class="f-badge green">Compliant</div>
                                             </div>
                                             <div class="f-bar-wrap">
                                                 <div class="f-bar"><div class="fill green" style="width: 100%;"></div></div>
                                             </div>
-                                            <div class="f-metrics"><span>124/124 Controls</span><span>100%</span></div>
+                                            <div class="f-metrics"><span>88/88 Controls</span><span>100%</span></div>
                                         </div>
                                         
-                                        <!-- ISO 27001 Card -->
+                                        <!-- EU GDPR -->
                                         <div class="framework-card">
                                             <div class="f-head">
-                                                <div class="f-name">ISO 27001</div>
-                                                <div class="f-badge green">Passing</div>
+                                                <div class="f-name">🇪🇺 EU GDPR</div>
+                                                <div class="f-badge green">Compliant</div>
                                             </div>
                                             <div class="f-bar-wrap">
-                                                <div class="f-bar"><div class="fill green" style="width: 96%;"></div></div>
+                                                <div class="f-bar"><div class="fill green" style="width: 98%;"></div></div>
                                             </div>
-                                            <div class="f-metrics"><span>109/114 Controls</span><span>96%</span></div>
+                                            <div class="f-metrics"><span>112/114 Controls</span><span>98%</span></div>
                                         </div>
                                         
-                                        <!-- GDPR Card -->
+                                        <!-- USA CCPA -->
                                         <div class="framework-card active-risk">
                                             <div class="f-head">
-                                                <div class="f-name">GDPR</div>
-                                                <div class="f-badge yellow">Review</div>
+                                                <div class="f-name">🇺🇸 USA CCPA / CPRA</div>
+                                                <div class="f-badge yellow">In Review</div>
                                             </div>
                                             <div class="f-bar-wrap">
                                                 <div class="f-bar"><div class="fill orange" style="width: 82%;"></div></div>
                                             </div>
-                                            <div class="f-metrics"><span>82/100 Controls</span><span>82%</span></div>
+                                            <div class="f-metrics"><span>41/50 Controls</span><span>82%</span></div>
                                             <div class="f-issue-alert">
-                                                <span class="dot red pulse"></span> Data Processing Addendum missing
+                                                <span class="dot red pulse"></span> Privacy Policy update required
                                             </div>
                                         </div>
                                     </div>
